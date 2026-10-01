@@ -1,0 +1,235 @@
+<!doctype html>
+<!--
+  UI Book — chapter skeleton.
+  Placeholders: {{UPPER_CASE}} = a project value (names, paths, numbers).
+                {{Plain words}} = write this in the book's language.
+  Everything inside .m-screen below is EXAMPLE markup showing the kit; replace it with
+  the real screen. Every label inside a mock must exist in the code; only the data
+  (names, times, amounts) is fictional, and it comes from the demo data in mock.css.
+  Keep the eight section ids (summary … sources): build-index.mjs and the checks rely on them.
+-->
+<html lang="{{LANG}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{NN}} · {{CHAPTER_TITLE}} — {{BOOK_TITLE}}</title>
+<meta name="description" content="{{One sentence: what this chapter explains}}">
+<link rel="stylesheet" href="assets/book.css">
+<link rel="stylesheet" href="assets/mock.css">
+<script src="assets/book.js" defer></script>
+</head>
+<body data-part="{{PART_SHORT_NAME}}">
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="cuprins.html"><span class="brand-mark"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12.5-7.5z"/></svg></span>{{BOOK_TITLE}} <small>· {{BOOK_SUBTITLE}}</small></a>
+    <div class="topbar-where">{{PART_LABEL}} · <b>{{NN}} {{CHAPTER_TITLE}}</b></div>
+    <nav class="topbar-nav" aria-label="{{Chapters}}">
+      <a href="cuprins.html"><svg class="book-ico"><use href="#i-list"/></svg><span class="lbl">{{Contents}}</span></a>
+      <a href="chat.html"><svg class="book-ico"><use href="#i-chat"/></svg><span class="lbl">{{Ask}}</span></a>
+      <a href="{{NEXT_FILE}}"><span class="lbl">{{Next}}</span><svg class="book-ico"><use href="#i-arrowRight"/></svg></a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+
+  <!-- ============================================================ HERO -->
+  <header class="hero">
+    <div class="hero-num" aria-hidden="true">{{NN}}</div>
+    <div class="hero-kicker">{{PART_LABEL}}</div>
+    <h1>{{CHAPTER_TITLE}}</h1>
+    <p class="hero-lede">{{One line: what the reader does on this screen}}</p>
+    <div class="hero-meta">
+      <span class="chip"><svg class="book-ico"><use href="#i-eye"/></svg>{{Address}}: <code>{{ROUTE}}</code></span>
+      <span class="chip"><svg class="book-ico"><use href="#i-user"/></svg>{{For}}: {{ROLES}}</span>
+    </div>
+  </header>
+
+  <nav class="toc-chips" aria-label="{{In this chapter}}">
+    <a href="#summary"><span>1</span>{{Summary}}</a>
+    <a href="#map"><span>2</span>{{Screen map}}</a>
+    <a href="#sections"><span>3</span>{{Each section}}</a>
+    <a href="#actions"><span>4</span>{{What you can do here}}</a>
+    <a href="#messages"><span>5</span>{{Messages and notifications}}</a>
+    <a href="#tips"><span>6</span>{{Getting the most out of it}}</a>
+    <a href="#roles"><span>7</span>{{Who sees what}}</a>
+    <a href="#sources"><span>8</span>{{Sources and open questions}}</a>
+  </nav>
+
+  <!-- ============================================================ 1 SUMMARY -->
+  <section class="sec" id="summary">
+    <h2 class="sec-h"><span class="n">1</span>{{Summary}}</h2>
+    <p class="lead">{{Three sentences at most: what the screen is for, who uses it, what they do from here.}}</p>
+  </section>
+
+  <!-- ============================================================ 2 MAP -->
+  <section class="sec" id="map">
+    <h2 class="sec-h"><span class="n">2</span>{{Screen map}}</h2>
+    <p class="sec-intro">{{One line: which device, top to bottom.}}</p>
+
+    <figure class="fig map wide">
+      <div class="m-stage" style="max-width:1000px" id="map-main">
+        <div class="m-screen" style="--w:1120">
+          <div class="m-shell">
+            <aside class="m-side m-rel"><b class="m-pin tr">1</b>
+              <div class="m-side-brand">{{APP_NAME}}</div>
+              <div class="m-side-kind">{{AREA}}</div>
+              <nav class="m-nav">
+                <a><svg class="m-ico"><use href="#i-home"/></svg>Home</a>
+                <a class="on"><svg class="m-ico"><use href="#i-list"/></svg>Tasks<span class="m-count">3</span></a>
+                <a><svg class="m-ico"><use href="#i-calendar"/></svg>Calendar</a>
+                <a><svg class="m-ico"><use href="#i-settings"/></svg>Settings</a>
+              </nav>
+            </aside>
+            <div class="m-main">
+              <header class="m-head m-rel"><b class="m-pin">2</b><h1>Tasks</h1>
+                <div class="m-ctrls"><span class="m-btn primary"><svg class="m-ico"><use href="#i-plus"/></svg>New task</span><span class="m-avatar"><span>AR</span></span></div>
+              </header>
+              <div class="m-content">
+                <div class="m-grid-4">
+                  <div class="m-stat accent m-rel"><b class="m-pin">3</b><div class="m-stat-l"><i><svg class="m-ico"><use href="#i-check"/></svg></i><span>Done today</span></div><div class="m-stat-v">12</div><div class="m-stat-h">+3 vs. yesterday</div></div>
+                  <div class="m-stat"><div class="m-stat-l"><i><svg class="m-ico"><use href="#i-clock"/></svg></i><span>Overdue</span></div><div class="m-stat-v">2</div><div class="m-stat-h"><span class="bad">2 overdue</span></div></div>
+                  <div class="m-stat"><div class="m-stat-l"><i><svg class="m-ico"><use href="#i-users"/></svg></i><span>Assigned</span></div><div class="m-stat-v">5</div><div class="m-stat-h">to 3 people</div></div>
+                  <div class="m-stat"><div class="m-stat-l"><i><svg class="m-ico"><use href="#i-calendar"/></svg></i><span>This week</span></div><div class="m-stat-v">18</div><div class="m-stat-h">&nbsp;</div></div>
+                </div>
+                <div class="m-card m-rel"><b class="m-pin">4</b>
+                  <div class="m-card-h"><h2><svg class="m-ico"><use href="#i-list"/></svg>Open tasks</h2><div class="m-act"><span class="m-badge danger">2 overdue</span></div></div>
+                  <div class="m-card-b m-stack">
+                    <div class="m-row fail"><div class="m-row-main"><span class="m-row-k">Due 09:00</span><span class="m-row-t sm">Send invoice to Lena Fischer</span></div><span class="m-badges"><span class="m-badge danger dot">Overdue</span></span></div>
+                    <div class="m-row"><div class="m-row-main"><span class="m-row-k">Due 14:30</span><span class="m-row-t sm">Call Omar Haddad</span></div><span class="m-badges"><span class="m-badge info dot">Today</span></span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </figure>
+    <ol class="legend wide" data-map="#map-main">
+      <li>{{What the menu shows and what the red number counts.}}</li>
+      <li>{{What the header button does.}}</li>
+      <li>{{What the green tile counts and where the number comes from.}}</li>
+      <li>{{What the list shows, its order, and what a red row means.}}</li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ 3 SECTIONS -->
+  <section class="sec" id="sections">
+    <h2 class="sec-h"><span class="n">3</span>{{Each section}}</h2>
+    <p class="sec-intro">{{One line.}}</p>
+
+    <div class="part">
+      <div class="part-head"><h3>{{Section name as on screen}}</h3><span class="part-where"><i>4</i>{{on the map}}</span></div>
+      <p>{{What it shows and where the numbers come from, in one or two sentences. Facts the picture shows go in the legend, not here.}}</p>
+      <div class="states">
+        <figure class="state"><div class="state-l empty">{{Empty}}</div>
+          <div class="m-stage"><div class="m-screen m-crop tight" style="--w:380"><div class="m-card"><div class="m-empty"><i><svg class="m-ico"><use href="#i-check"/></svg></i><h3>No open tasks</h3><p>New tasks appear here.</p></div></div></div></div>
+          <figcaption>{{When it happens.}}</figcaption></figure>
+        <figure class="state"><div class="state-l load">{{Loading}}</div>
+          <div class="m-stage"><div class="m-screen m-crop tight" style="--w:380"><div class="m-card"><div class="m-card-b m-stack"><span class="m-skel"></span><span class="m-skel" style="width:70%"></span><span class="m-skel" style="width:85%"></span></div></div></div></div>
+          <figcaption>{{What the reader sees while it loads.}}</figcaption></figure>
+        <figure class="state"><div class="state-l err">{{Error}}</div>
+          <div class="m-stage"><div class="m-screen m-crop tight" style="--w:380"><div class="m-alert danger"><svg class="m-ico"><use href="#i-alert"/></svg><div class="m-alert-c"><b>Could not load tasks</b>Check your connection and try again.</div></div></div></div>
+          <figcaption>{{What to do.}}</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ 4 ACTIONS -->
+  <section class="sec" id="actions">
+    <h2 class="sec-h"><span class="n">4</span>{{What you can do here}}</h2>
+    <p class="sec-intro">{{Click a step to freeze the picture; Play starts it again.}}</p>
+
+    <!-- one figure per action: every dialog, drawer, form, confirmation, quick action, filter -->
+    <figure class="flow wide" id="flow-new" data-final="4">
+      <figcaption class="flow-title"><span class="flow-n">A</span>{{Add a task}}</figcaption>
+      <p class="flow-sub">{{Optional: who can do it, or the condition.}}</p>
+      <div class="flow-grid">
+        <div class="flow-mock"><div class="m-stage"><div class="m-screen m-crop" style="--w:620;min-height:24em">
+          <div class="m-card">
+            <div class="m-card-h"><h2>Open tasks</h2><div class="m-act"><span class="m-btn primary sm" id="fn-new"><svg class="m-ico"><use href="#i-plus"/></svg>New task</span></div></div>
+            <div class="m-card-b m-stack">
+              <div class="m-row m-pop" data-swap="4"><div class="m-row-main"><span class="m-row-k">Due 16:00</span><span class="m-row-t sm">Order new labels</span></div><span class="m-badges"><span class="m-badge info dot">Today</span></span></div>
+              <div class="m-row"><div class="m-row-main"><span class="m-row-k">Due 14:30</span><span class="m-row-t sm">Call Omar Haddad</span></div><span class="m-badges"><span class="m-badge info dot">Today</span></span></div>
+            </div>
+          </div>
+          <div class="m-overlay" data-on="1-3"><div class="m-dialog">
+            <div class="m-dialog-h"><div><h3>New task</h3><p>It appears in the list straight away.</p></div><span class="m-x"><svg class="m-ico"><use href="#i-x"/></svg></span></div>
+            <div class="m-dialog-b">
+              <label class="m-flabel">Title</label>
+              <div class="m-input" id="fn-title" data-state="2+:focus"><span class="m-placeholder" data-swap="0-1">What needs doing?</span><span class="m-type" data-swap="2+">Order new labels</span></div>
+            </div>
+            <div class="m-dialog-f"><span class="m-btn outline">Cancel</span><span class="m-btn primary" id="fn-save"><span data-swap="0-2">Save</span><span data-swap="3+">Saving…</span></span></div>
+          </div></div>
+          <div class="m-toast success" data-on="4">Task added</div>
+        </div></div></div>
+        <ol class="flow-steps">
+          <li data-target="#fn-new"><b>{{Press “New task”.}}</b></li>
+          <li data-target="#fn-title" data-tap="0" data-ms="1800"><b>{{The window opens.}}</b></li>
+          <li data-target="#fn-title" data-ms="2600"><b>{{Type the title.}}</b><small>{{Only when the picture cannot show it.}}</small></li>
+          <li data-target="#fn-save" data-ms="2000"><b>{{Press “Save”.}}</b></li>
+          <li><b>{{Done: the task is at the top of the list.}}</b></li>
+        </ol>
+      </div>
+      <p class="flow-note">{{Optional: what happens if it fails, with the exact message.}}</p>
+    </figure>
+  </section>
+
+  <!-- ============================================================ 5 MESSAGES -->
+  <section class="sec" id="messages">
+    <h2 class="sec-h"><span class="n">5</span>{{Messages and notifications}}</h2>
+    <p class="sec-intro">{{The exact text. {name} or N mean the app puts in the name or number.}}</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>{{Text}}</th><th>{{Kind}}</th><th>{{When it appears}}</th><th>{{What to do}}</th></tr></thead>
+      <tbody>
+        <tr class="grp"><td colspan="4">{{Toasts}}</td></tr>
+        <tr><td class="msg" data-l="{{Text}}">Task added</td><td data-l="{{Kind}}"><span class="tone ok">{{toast}}</span></td><td data-l="{{When it appears}}">{{After saving a new task.}}</td><td data-l="{{What to do}}">{{Nothing.}}</td></tr>
+        <tr class="grp"><td colspan="4">{{Errors}}</td></tr>
+        <tr><td class="msg" data-l="{{Text}}">Could not load tasks<small>Check your connection and try again.</small></td><td data-l="{{Kind}}"><span class="tone danger">{{red banner}}</span></td><td data-l="{{When it appears}}">{{The list did not load.}}</td><td data-l="{{What to do}}">{{Check the connection, then reload.}}</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ============================================================ 6 TIPS -->
+  <section class="sec" id="tips">
+    <h2 class="sec-h"><span class="n">6</span>{{Getting the most out of it}}</h2>
+    <ol class="tips">
+      <li><div><b>{{One practical tip per line.}}</b><p>{{Optional one-line reason.}}</p></div></li>
+      <li><div><b>{{The fastest way to do the most common job.}}</b></div></li>
+    </ol>
+  </section>
+
+  <!-- ============================================================ 7 ROLES -->
+  <section class="sec" id="roles">
+    <h2 class="sec-h"><span class="n">7</span>{{Who sees what}}</h2>
+    <p class="sec-intro">{{Which roles, plans or flags gate this screen.}}</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>{{What}}</th><th>{{ROLE_A}}</th><th>{{ROLE_B}}</th></tr></thead>
+      <tbody>
+        <tr><td data-l="{{What}}"><b>{{The screen}}</b></td><td data-l="{{ROLE_A}}"><span class="yes">{{yes}}</span></td><td data-l="{{ROLE_B}}"><span class="no">{{no}}</span>: {{what happens instead}}</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ============================================================ 8 SOURCES -->
+  <section class="sec" id="sources">
+    <h2 class="sec-h"><span class="n">8</span>{{Sources and open questions}}</h2>
+    <p class="sec-intro">{{Everything here comes from the code, read on DATE.}}</p>
+    <h3 id="sources-files">{{Sources}}</h3>
+    <ul class="src">
+      <li><code>{{path/to/page}}</code> — {{what it gave this chapter}}</li>
+    </ul>
+    <h3 id="sources-open">{{Open questions}}</h3>
+    <ol class="checks">
+      <li><div><b>{{The thing that does not add up.}}</b> {{What the code does, and the question for the owner.}}</div></li>
+    </ol>
+  </section>
+
+  <nav class="chap-foot" aria-label="{{Chapters}}">
+    <a href="{{PREV_FILE}}"><small>{{Previous}}</small><b>{{PREV_TITLE}}</b></a>
+    <a href="{{NEXT_FILE}}"><small>{{Next}}</small><b>{{NEXT_TITLE}}</b></a>
+  </nav>
+</main>
+</body>
+</html>

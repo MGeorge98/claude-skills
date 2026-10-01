@@ -1,0 +1,87 @@
+<!doctype html>
+<!--
+  UI Book — cover + table of contents. Save as cuprins.html / contents.html, NOT index.html
+  when the chat page will be published as the artifact page (the publisher serves the page
+  itself at the root, so a file named index.html among the supporting files collides).
+  A static host that needs index.html can get a one-line redirect file instead.
+  Placeholders: {{UPPER_CASE}} = project value · {{Plain words}} = write in the book's language.
+  Chapter cards: <a class="toc-item"> when the chapter exists, <div class="toc-item"> while it is planned.
+-->
+<html lang="{{LANG}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{BOOK_TITLE}}</title>
+<meta name="description" content="{{One sentence: what the book covers}}">
+<link rel="stylesheet" href="assets/book.css">
+<link rel="stylesheet" href="assets/mock.css">
+<script src="assets/book.js" defer></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="cuprins.html"><span class="brand-mark"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12.5-7.5z"/></svg></span>{{BOOK_TITLE}} <small>· {{BOOK_SUBTITLE}}</small></a>
+    <div class="topbar-where">{{Contents}}</div>
+    <nav class="topbar-nav" aria-label="{{Navigation}}">
+      <a href="chat.html"><svg class="book-ico"><use href="#i-chat"/></svg><span class="lbl">{{Ask the book}}</span></a>
+      <a href="{{FIRST_CHAPTER_FILE}}"><span class="lbl">{{Start with}}</span> {{FIRST_CHAPTER_LABEL}}<svg class="book-ico"><use href="#i-arrowRight"/></svg></a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <section class="cover">
+    <div>
+      <div class="cover-k">{{PRODUCT}} · {{OWNER}}</div>
+      <h1>{{Title line one}}<br>{{line two}} <em>{{PRODUCT}}</em></h1>
+      <p class="cover-lede">{{Two sentences: what is inside, and for whom (scope: whole app / one module / one flow / a prototype).}}</p>
+      <div class="hero-meta" style="margin-top:22px">
+        <span class="chip"><svg class="book-ico"><use href="#i-today"/></svg>{{PART_1_NAME}}</span>
+        <span class="chip"><svg class="book-ico"><use href="#i-phone"/></svg>{{PART_2_NAME}}</span>
+      </div>
+    </div>
+    <div class="cover-art" aria-hidden="true">
+      <!-- one small, real-looking crop from the pilot chapter (copy a mock, keep it static) -->
+      <div class="m-stage" style="max-width:520px">
+        <div class="m-screen m-crop" style="--w:520">
+          <div class="m-stack" style="gap:.875em">
+            <div class="m-alert success edged"><svg class="m-ico"><use href="#i-check"/></svg><div class="m-alert-c"><b>{{A real success banner from the app}}</b>{{its exact second line}}</div></div>
+            <div class="m-grid-2" style="gap:.875em">
+              <div class="m-stat accent"><div class="m-stat-l"><i><svg class="m-ico"><use href="#i-chart"/></svg></i><span>{{KPI label}}</span></div><div class="m-stat-v">{{1,240}}</div><div class="m-stat-h">{{hint}}</div></div>
+              <div class="m-stat"><div class="m-stat-l"><i><svg class="m-ico"><use href="#i-clock"/></svg></i><span>{{KPI label}}</span></div><div class="m-stat-v">{{7}}</div><div class="m-stat-h">{{hint}}</div></div>
+            </div>
+            <div style="height:3em"></div>
+          </div>
+          <div class="m-toast success">{{A real toast text}}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <ul class="how">
+    <li><i><svg class="book-ico"><use href="#i-eye"/></svg></i><b>{{Screen map}}</b><p>{{Every chapter opens with the whole screen and numbered pins; the list under it says what each part does.}}</p></li>
+    <li><i><svg class="book-ico"><use href="#i-play"/></svg></i><b>{{Animated steps}}</b><p>{{Each action plays as a moving picture; the current step lights up in the list. Click a step to stop there.}}</p></li>
+    <li><i><svg class="book-ico"><use href="#i-bell"/></svg></i><b>{{Every message}}</b><p>{{A table of every message the screen can show: exact text, when it appears, what to do.}}</p></li>
+    <li><i><svg class="book-ico"><use href="#i-book"/></svg></i><b>{{Prints as a book}}</b><p>{{Ctrl + P (⌘ + P on a Mac) makes a PDF: each section on its own page, animations on their last frame.}}</p></li>
+  </ul>
+
+  <nav class="toc" aria-label="{{Contents}}">
+    <div class="toc-part"><h2>{{Part I · PART_1_NAME}}</h2><p>{{one line}}</p></div>
+    <ul class="toc-list">
+      <li><a class="toc-item" href="01-{{slug}}.html"><span class="no">01</span><span><b>{{CHAPTER_TITLE}}</b><small>{{what it covers, one line}}</small></span><span class="st">{{ready}}</span></a></li>
+      <li><div class="toc-item"><span class="no">02</span><span><b>{{CHAPTER_TITLE}}</b><small>{{what it covers}}</small></span><span class="st">{{planned}}</span></div></li>
+    </ul>
+
+    <div class="toc-part"><h2>{{Part IV · Patterns and consistency}}</h2><p>{{what repeats, what does not match, what to do next}}</p></div>
+    <ul class="toc-list">
+      <li><div class="toc-item"><span class="no">40</span><span><b>{{Patterns}}</b><small>{{the shared building blocks and their rules}}</small></span><span class="st">{{planned}}</span></div></li>
+      <li><div class="toc-item"><span class="no">41</span><span><b>{{Consistency audit}}</b><small>{{every inconsistency, ranked}}</small></span><span class="st">{{planned}}</span></div></li>
+      <li><div class="toc-item"><span class="no">42</span><span><b>{{UI/UX proposals}}</b><small>{{grouped by journey, with effort and priority}}</small></span><span class="st">{{planned}}</span></div></li>
+    </ul>
+  </nav>
+
+  <footer class="colophon">{{Written from the code of REPO on DATE. Data in the pictures is fictional.}}</footer>
+</main>
+</body>
+</html>
