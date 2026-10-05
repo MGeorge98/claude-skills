@@ -7,6 +7,7 @@ Skills for Claude Code (and any agent that reads `SKILL.md` packages).
 ```
 npx skills add MGeorge98/claude-skills --skill pet-studio
 npx skills add MGeorge98/claude-skills --skill ui-book
+npx skills add MGeorge98/claude-skills --skill orchestrator
 ```
 
 ## Skills
@@ -30,6 +31,14 @@ Invoke with `/ui-book` and what to cover ("the bookings and payments module", "t
 What it encodes from real runs: the code is the source of truth and nothing is invented; legends say what a part does; explanations live in pictures, legends and tables, not paragraphs; shared files are append-only per chapter; QA redoes the phone and print checks agents tend to skip; the halving pass needs tables and legends, not deletion.
 
 Files: `ui-book/SKILL.md` (the method), `ui-book/references/` (plan and agent briefs), `ui-book/assets/` (page kit, flow engine, chapter and cover templates, chat page and index builder), `ui-book/scripts/` (render, links, print, prose count, CSS duplicate checks).
+
+### orchestrator
+
+CEO mode for a Claude Code session: the main session only plans, decides and delegates; all real work goes to subagents, so the expensive main context holds just the goal, the plan, decisions and short agent reports. Routes work by difficulty (`haiku` for lookups, `sonnet` by default, `opus` for genuinely hard or risky tasks), defines what a brief must contain, how to run agents in parallel, and how to verify cheaply.
+
+Invoke with `/orchestrator`; it stays active until "stop orchestrator" / "normal mode".
+
+Files: `orchestrator/SKILL.md`.
 
 ## License
 
