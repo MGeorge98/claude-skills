@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="%VITE_DECK_LANG%">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>%VITE_DECK_TITLE%</title>
+    <link rel="icon" href="data:," />
+    <script>
+      /* deck-studio boot: html.js, html.rm (prefers-reduced-motion or ?rm), html.print (?print),
+         html.presenter (?presenter); if the runtime has not added html.deck-ready within 3.5 s
+         (mirrors --failsafe), swap html.js for html.deck-static: the stacked document. */
+      (function () {
+        var d = document.documentElement, q = location.search;
+        d.classList.add("js");
+        try { if (matchMedia("(prefers-reduced-motion: reduce)").matches || /[?&]rm\b/.test(q)) d.classList.add("rm"); } catch (e) {}
+        if (/[?&]print\b/.test(q)) d.classList.add("print");
+        if (/[?&]presenter\b/.test(q)) d.classList.add("presenter");
+        setTimeout(function () {
+          if (!d.classList.contains("deck-ready")) { d.classList.remove("js"); d.classList.add("deck-static"); }
+        }, 3500);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,68 @@
+/* cascade-list slide: classes prefixed .cascade-list- ; sizes in px at 1920 x 1080.
+   Every row is laid out from step 0 (hidden steps keep their box), so nothing moves as rows enter. */
+.cascade-list-root {
+  position: absolute;
+  inset: 0;
+  padding: var(--slide-pad);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.cascade-list-kicker {
+  margin: 0 0 28px;
+  font: 500 var(--fs-kicker)/1.2 var(--font-mono);
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.cascade-list-point {
+  margin: 0;
+  max-width: 1480px;
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  font-weight: 800;
+  letter-spacing: -.03em;
+  color: var(--ink);
+}
+.cascade-list-rows {
+  list-style: none;
+  margin: 56px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 20px;
+  max-width: 1500px;
+}
+.cascade-list-two { grid-template-columns: 1fr 1fr; gap: 20px 28px; max-width: none; }
+.cascade-list-row {
+  padding: 24px 32px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--ink) 2.5%, transparent);
+}
+/* the card frame belongs to the row's step: hide it with the head until the step enters */
+html.js:not(.print) .cascade-list-row:has(> .cascade-list-head:not(.in)) { border-color: transparent; background: transparent; }
+html.js:not(.rm):not(.print) .cascade-list-row { transition: border-color var(--t-step) var(--ease), background-color var(--t-step) var(--ease); }
+.cascade-list-head { display: flex; align-items: baseline; gap: 28px; }
+.cascade-list-n {
+  flex: none;
+  font: 600 24px/1 var(--font-mono);
+  letter-spacing: .12em;
+  color: var(--accent);
+}
+.cascade-list-text { font-size: 40px; line-height: 1.2; font-weight: 700; color: var(--ink); }
+.cascade-list-sub {
+  margin: 10px 0 0;
+  font-size: 28px;
+  line-height: 1.35;
+  color: var(--ink-2);
+}
+.cascade-list-rows[data-numbered] .cascade-list-sub { padding-left: 64px; }
+.cascade-list-closing {
+  margin: 48px 0 0;
+  max-width: 1500px;
+  font-size: 52px;
+  line-height: 1.12;
+  font-weight: 800;
+  letter-spacing: -.025em;
+  color: var(--accent);
+}

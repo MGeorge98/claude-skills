@@ -1,0 +1,63 @@
+/* video slide: classes prefixed .video- ; sizes in px at 1920 x 1080.
+   A framed 16:9 card. Split (kicker or point present): text column 520px on the left, frame 1112 x 625.5 on the
+   right. Solo: the frame alone, 1440 x 810, centred. The caption sits under the frame in mono. */
+.video-root {
+  position: absolute;
+  inset: 0;
+  padding: var(--slide-pad);
+  display: grid;
+  align-items: center;
+}
+.video-split { grid-template-columns: 520px 1fr; column-gap: 64px; }
+.video-solo { padding-top: 72px; padding-bottom: 72px; justify-items: center; }
+.video-head { align-self: center; }
+.video-kicker {
+  margin: 0 0 28px;
+  font: 500 var(--fs-kicker)/1.2 var(--font-mono);
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.video-point {
+  margin: 0;
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  font-weight: 800;
+  letter-spacing: -.03em;
+  color: var(--ink);
+}
+.video-col { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.video-frame {
+  position: relative;
+  width: 1112px;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--ink) 4%, var(--bg));
+  box-shadow: 0 30px 90px -30px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+.video-solo .video-frame { width: 1440px; }
+.video-media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+.video-contain { object-fit: contain; }
+.video-cover { object-fit: cover; }
+.video-caption {
+  margin: 0;
+  max-width: 1112px;
+  font: 500 var(--fs-caption)/1.4 var(--font-mono);
+  letter-spacing: .02em;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.video-solo .video-caption { max-width: 1440px; }
+/* ?print: the poster alone, no native control bar or loading ring painted over it */
+html.print .video-media::-webkit-media-controls,
+html.print .video-media::-webkit-media-controls-enclosure { display: none !important; }

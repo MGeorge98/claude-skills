@@ -1,0 +1,127 @@
+/* code slide: classes prefixed .code- ; sizes in px at 1920 x 1080.
+   Rows are 39px (30px mono). The block shows at most 18 rows; longer code moves every row and band by the same
+   transform to the lit range (never scrollTop; .code-lines keeps the window's height, so it never pokes out).
+   Rows outside the window are visibility: hidden once the move has finished, so no element rests outside the stage. Each row clips its own text (no inner spans), so long lines never wrap and
+   never leave the block; the last 72px of every row fade out. */
+.code-root {
+  --code-lh: 39px;
+  --code-fs: 30px;
+  position: absolute;
+  inset: 0;
+  padding: 64px var(--slide-pad);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.code-top { display: flex; justify-content: space-between; align-items: baseline; gap: 32px; margin: 0 0 16px; }
+.code-kicker, .code-lang {
+  margin: 0;
+  font: 500 var(--fs-kicker)/1.2 var(--font-mono);
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.code-kicker { color: var(--accent); }
+.code-lang { color: var(--muted); }
+.code-point {
+  margin: 0 0 28px;
+  max-width: 1696px;
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  font-weight: 800;
+  letter-spacing: -.03em;
+  color: var(--ink);
+}
+
+/* the block: a window of --code-v rows */
+.code-block {
+  position: relative;
+  flex: none;
+  height: calc(var(--code-v) * var(--code-lh) + 40px);
+  padding: 20px 0;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--ink) 3%, var(--bg));
+  font: 500 var(--code-fs)/var(--code-lh) var(--font-mono);
+  font-variant-ligatures: none;
+}
+.code-lines { position: relative; height: calc(var(--code-v) * var(--code-lh)); }
+.code-root { --code-y: translateY(calc(var(--code-off) * var(--code-lh) * -1)); }
+
+.code-row { position: relative; z-index: 1; display: flex; height: var(--code-lh); transform: var(--code-y); }
+.code-n {
+  flex: none;
+  width: calc(var(--code-digits) * .6em + 64px);
+  padding-right: 28px;
+  text-align: right;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.code-t {
+  flex: 1;
+  min-width: 0;
+  padding-right: 32px;
+  overflow: hidden;
+  white-space: pre;
+  color: var(--ink);
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 104px), transparent calc(100% - 32px));
+  mask-image: linear-gradient(to right, #000 calc(100% - 104px), transparent calc(100% - 32px));
+}
+
+/* dim at .55 from step 0; the lit range at full opacity. Only on the stage (print and no JS: undimmed). */
+html.js:not(.print) .code-row { opacity: .55; }
+html.js:not(.print) .code-row[data-on] { opacity: 1; }
+html.js:not(.print) .code-row[data-on] .code-n { color: var(--accent); }
+html.js:not(.print) .code-row[data-out] { visibility: hidden; }
+html.js:not(.rm):not(.print) .code-row {
+  transition: transform calc(var(--t-step) * 1.4) var(--ease), opacity var(--t-step) var(--ease), visibility 0s linear 0s;
+}
+html.js:not(.rm):not(.print) .code-row[data-out] {
+  transition: transform calc(var(--t-step) * 1.4) var(--ease), opacity var(--t-step) var(--ease), visibility 0s linear calc(var(--t-step) * 1.4);
+}
+
+/* the band behind the lit range: accent tint plus a left bar; a swap group, so only the current one is in */
+.code-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--code-a) * var(--code-lh));
+  height: calc(var(--code-len) * var(--code-lh));
+  z-index: 0;
+  background: color-mix(in srgb, var(--accent) 13%, transparent);
+  box-shadow: inset 6px 0 0 var(--accent);
+  transform: var(--code-y);
+}
+/* a band fades in place: no rise, it moves with the rows */
+html.js:not(.rm):not(.print) .code-band[data-step]:not(.in) { transform: var(--code-y); }
+html.js:not(.rm):not(.print) .code-band[data-step] {
+  transition: opacity var(--t-step) var(--ease), transform calc(var(--t-step) * 1.4) var(--ease);
+}
+
+/* caption: one line under the block, space reserved from step 0 */
+.code-caption { flex: none; margin-top: 20px; height: 34px; }
+.code-cap, .code-ranges-item {
+  margin: 0;
+  font: 500 var(--fs-caption)/34px var(--font-mono);
+  color: var(--ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.code-cap-l { display: inline-block; min-width: 6ch; margin-right: 20px; color: var(--accent); }
+.code-ranges { display: none; list-style: none; margin: 16px 0 0; padding: 0; }
+
+/* ?print and the stacked document (no JS, failsafe): every row, undimmed, no band, the ranges listed under the
+   block; the rows shrink so the whole snippet fits beside the list (36px per range line). */
+html.print .code-root, html:not(.js) .code-root {
+  --code-lh: min(39px, calc((796px - 40px - var(--code-r) * 36px) / var(--code-n)));
+  --code-fs: calc(var(--code-lh) / 1.3);
+}
+html.print .code-block, html:not(.js) .code-block { height: calc(var(--code-n) * var(--code-lh) + 40px); }
+html.print .code-lines, html:not(.js) .code-lines { height: auto; }
+html.print .code-row, html:not(.js) .code-row { transform: none; }
+html.print .code-band, html:not(.js) .code-band,
+html.print .code-caption, html:not(.js) .code-caption { display: none; }
+html.print .code-ranges, html:not(.js) .code-ranges { display: block; }
+html.print .code-ranges-item, html:not(.js) .code-ranges-item { line-height: 36px; }

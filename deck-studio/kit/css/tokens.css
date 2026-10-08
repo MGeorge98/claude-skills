@@ -1,0 +1,41 @@
+/* deck-studio · tokens. The app owns this file after the first copy (sync-kit.sh writes it only when missing).
+   Brand block: the same names as landing-studio, values set by the brand ingest. The values below are the
+   "Exemplu" brand, taken from the MBV Summit deck theme. Deck block and type scale: fixed by CONTRACT.md. */
+:root {
+  /* ---- brand ---- */
+  --bg: #060e0a;
+  --ink: #ffffff;
+  --ink-2: #cfd8d4;
+  --muted: #9aa8a2;
+  --accent: #2fc68f;
+  --accent-2: #5ed4a8;
+  --line: rgba(255, 255, 255, .1);
+  --font-sans: "Plus Jakarta Sans", -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+
+  /* ---- deck ---- */
+  --slide-pad: 112px;
+  --t-step: .45s;
+  --t-slide: .32s;
+  --stagger: 70ms;
+  --stagger-word: 45ms;
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  --spring: cubic-bezier(.32, 1.28, .36, 1);
+  --inout: cubic-bezier(.65, 0, .35, 1);
+  --failsafe: 3.5s;
+
+  /* ---- type scale at 1920 x 1080 (px, the runtime scales the stage) ---- */
+  --fs-kicker: 26px;
+  --fs-display: 124px;  /* title slide only */
+  --lh-display: 1.02;
+  --fs-title: 88px;
+  --lh-title: 1.02;
+  --fs-h2: 64px;
+  --lh-h2: 1.08;
+  --fs-body: 36px;
+  --lh-body: 1.35;
+  --fs-caption: 24px;
+  --fs-big: 320px;
+  --lh-big: .92;
+  --track-kicker: .14em;
+}

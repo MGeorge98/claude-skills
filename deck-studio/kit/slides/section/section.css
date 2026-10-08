@@ -1,0 +1,46 @@
+/* section slide: classes prefixed .section- ; sizes in px at 1920 x 1080 */
+.section-root { position: absolute; inset: 0; padding: var(--slide-pad); }
+.section-glow { position: absolute; inset: 0; pointer-events: none; }
+.section-glow-center {
+  background: radial-gradient(52% 58% at 50% 52%, color-mix(in srgb, var(--accent) 17%, transparent), transparent 62%);
+}
+.section-glow-left {
+  background:
+    radial-gradient(48% 52% at 28% 48%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 60%),
+    radial-gradient(40% 42% at 86% 80%, color-mix(in srgb, var(--accent-2) 10%, transparent), transparent 58%);
+}
+.section-main {
+  position: absolute;
+  left: var(--slide-pad);
+  right: var(--slide-pad);
+  top: 50%;
+  transform: translateY(-50%);
+}
+.section-center .section-main { text-align: center; }
+.section-num {
+  margin: 0 0 12px;
+  padding-top: 8px;
+  font: 600 160px/.92 var(--font-mono);
+  letter-spacing: -.02em;
+  color: var(--accent);
+}
+.section-outline { color: transparent; -webkit-text-stroke: 4px var(--accent); }
+.section-name {
+  margin: 0;
+  max-width: 1560px;
+  font-size: var(--fs-display);
+  line-height: var(--lh-display);
+  font-weight: 800;
+  letter-spacing: -.04em;
+  color: var(--ink);
+}
+.section-center .section-name { margin-left: auto; margin-right: auto; }
+.section-line {
+  margin: 40px 0 0;
+  max-width: 1200px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  font-weight: 500;
+  color: var(--ink-2);
+}
+.section-center .section-line { margin-left: auto; margin-right: auto; }

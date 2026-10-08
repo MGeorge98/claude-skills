@@ -1,0 +1,99 @@
+/* demo slide: classes prefixed .demo- ; sizes in px at 1920 x 1080.
+   The fallback picture sits over the iframe until the iframe loads (data-live="live").
+   If the frame does not load within 4 s, or the load is empty, data-live="off" keeps the picture for good.
+   ?print, no JS and the failsafe (html:not(.js)) always show the picture and never the frame. */
+.demo-root {
+  position: absolute;
+  inset: 0;
+  padding: 64px var(--slide-pad);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.demo-kicker {
+  margin: 0 0 16px;
+  font: 500 var(--fs-kicker)/1.2 var(--font-mono);
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.demo-point {
+  margin: 0;
+  max-width: 1696px;
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  font-weight: 800;
+  letter-spacing: -.03em;
+  color: var(--ink);
+}
+.demo-card {
+  margin-top: 36px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--ink) 4%, var(--bg));
+  box-shadow: 0 30px 80px -40px rgba(0, 0, 0, .6);
+}
+.demo-bar {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 14px 0 20px;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--ink) 6%, var(--bg));
+}
+.demo-dots { display: flex; gap: 10px; flex: none; }
+.demo-dots > i {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ink) 22%, transparent);
+}
+.demo-url {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 16px 8px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  font: 500 19px/1.2 var(--font-mono);
+  letter-spacing: .02em;
+  color: var(--ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.demo-badge {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px 8px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  font: 600 17px/1 var(--font-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.demo-badge > i { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+.demo-view { position: relative; overflow: hidden; background: var(--bg); }
+.demo-frame { position: absolute; inset: 0; display: block; border: 0; background: var(--bg); }
+.demo-fallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
+.demo-note {
+  margin: 20px 0 0;
+  font-size: var(--fs-caption);
+  line-height: 1.35;
+  color: var(--ink-2);
+}
+
+/* live: the picture fades out once the frame loaded (instant under rm) */
+html.js .demo-fallback { transition: opacity .4s var(--ease), visibility 0s linear 0s; }
+html.js .demo-view[data-live="live"] .demo-fallback { opacity: 0; visibility: hidden; transition: opacity .4s var(--ease), visibility 0s linear .4s; }
+html.js .demo-view:not([data-live="live"]) .demo-frame { visibility: hidden; }
+/* a dead demo says so in the badge, so the speaker knows the picture is a picture */
+html.js:not(.print) .demo-card:has(.demo-view[data-live="off"]) .demo-badge > i { background: var(--muted); }
+
+/* print, no JS, failsafe: the picture, never the frame */
+html.print .demo-fallback, html:not(.js) .demo-fallback { opacity: 1 !important; visibility: visible !important; }
+html.print .demo-frame, html:not(.js) .demo-frame { visibility: hidden !important; }

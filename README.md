@@ -9,6 +9,7 @@ npx skills add MGeorge98/claude-skills --skill pet-studio
 npx skills add MGeorge98/claude-skills --skill ui-book
 npx skills add MGeorge98/claude-skills --skill orchestrator
 npx skills add MGeorge98/claude-skills --skill landing-studio
+npx skills add MGeorge98/claude-skills --skill deck-studio
 ```
 
 ## Skills
@@ -54,3 +55,13 @@ Invoke with `/landing-studio` and the material (an event, a talk, a deck, a prod
 What it encodes from real runs: the finished page must exist without motion (no JS, reduced motion and a dead bundle all render the settled composition, with a 3.5 s failsafe); pinned layouts gate on the engine, not on JS; every child of a pin is a pure function of `--p`; transforms, opacity and clip-path only; no em dashes, no invented facts; never raise a threshold to turn a red run green; a report that describes a frame correctly can still miss the bug in it, so look at the frames yourself.
 
 Files: `landing-studio/SKILL.md` (the method), `CONTRACT.md` (the frozen kit contract), `kit/` (engine, CSS, React parts, scenes, backend, app template with `sync-kit.sh`), `scripts/` (audit, perf, gate, sheet, shoot, email preview), `references/` (brief, facts ledger, storyboard, motion language, parts contract, gotchas, clichés, handoff), `gallery/` (audit sheets of the kit demos).
+
+### deck-studio
+
+Orchestrator playbook plus a code kit for a web deck a speaker presents from: one Vite app, one URL, keys and clicks, steps inside slides that reveal without moving anything, a presenter window with notes and a timer, a PDF export, on a 1920x1080 stage the runtime scales. Fourteen slide types in `kit/slides/INDEX.md`, each with a spec, example data and preview variants: title, section, agenda, big-number, cascade-list, quote, two-up, image-full, screenshot-zoom, video, code, timeline, demo, closing-qr. Every claim traces to a facts ledger; an audit script checks every slide at every step (overflow, step counts, console, word budget, reduced motion, the prerendered no-JS document, print) and makes contact sheets you look at.
+
+Invoke with `/deck-studio` and the material (a talk, a pitch, a workshop, a deck draft); the deck's language follows the request. Phases: brief, facts, brand, outline with three tone directions (owner picks), scaffold, one reference slide then a fan-out of one agent per slide group, audit from pixels, a rehearsal with the owner, ship. Not for .pptx (use the pptx skill).
+
+What it encodes from real runs: one point per slide and under 40 words; steps reserve their space; the deck works without JS (prerendered) and prints with every step in; design at 1920x1080 in px, never viewport units; an embedded demo deck must stay out of the presenter sync; numbers come from a verified facts line or they do not go on the slide.
+
+Files: `deck-studio/SKILL.md` (the method), `CONTRACT.md` (stage, steps, keys, presenter, print, tokens), `kit/` (runtime, React parts, CSS, slide types, app template with `sync-kit.sh`), `scripts/` (audit, export, gate, sheet), `references/` (brief, facts ledger, outline, tone directions, slide rules, gotchas, clichés, handoff), `gallery/` (audit sheets of the kit demos).

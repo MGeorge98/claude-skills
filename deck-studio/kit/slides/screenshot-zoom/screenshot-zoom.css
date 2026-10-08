@@ -1,0 +1,216 @@
+/* screenshot-zoom slide: classes prefixed .screenshot-zoom- ; sizes in px at 1920 x 1080.
+   The frame is a fixed window; the image inside is laid out at its natural size and scaled down (--z0).
+   Step k makes cap k the only .in member of the "zoom" swap group, and :has() hands the layer --zk.
+   Zooming happens only in the live stage (html.js, not rm, not print); everywhere else the frame shows
+   the whole image with every region marked and the list of labels beside it. */
+.screenshot-zoom-root {
+  position: absolute;
+  inset: 0;
+  padding: 64px var(--slide-pad);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.screenshot-zoom-kicker {
+  margin: 0 0 16px;
+  font: 500 var(--fs-kicker)/1.2 var(--font-mono);
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.screenshot-zoom-point {
+  margin: 0;
+  max-width: 1696px;
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  font-weight: 800;
+  letter-spacing: -.03em;
+  color: var(--ink);
+}
+.screenshot-zoom-body {
+  display: flex;
+  align-items: center;
+  gap: 56px;
+  margin-top: 36px;
+}
+
+/* ---- the frame ---- */
+.screenshot-zoom-card {
+  flex: none;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--ink) 4%, var(--bg));
+  box-shadow: 0 30px 80px -40px rgba(0, 0, 0, .6);
+}
+.screenshot-zoom-bar {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--ink) 6%, var(--bg));
+}
+.screenshot-zoom-bar > i {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ink) 22%, transparent);
+}
+.screenshot-zoom-url {
+  margin-left: 18px;
+  font: 500 18px/1 var(--font-mono);
+  letter-spacing: .02em;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.screenshot-zoom-view {
+  position: relative;
+  overflow: hidden;
+}
+.screenshot-zoom-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  transform: var(--z0);
+}
+.screenshot-zoom-img { width: 100%; height: 100%; }
+
+/* region marks live in image pixels; their stroke is divided by the rest scale so it reads 2px at rest */
+.screenshot-zoom-mark {
+  position: absolute;
+  border: calc(2px / var(--k)) solid var(--accent);
+  border-radius: calc(10px / var(--k));
+  box-shadow: 0 0 0 calc(1px / var(--k)) color-mix(in srgb, var(--bg) 60%, transparent);
+}
+.screenshot-zoom-mark > b {
+  position: absolute;
+  left: calc(-15px / var(--k));
+  top: calc(-15px / var(--k));
+  min-width: calc(30px / var(--k));
+  height: calc(30px / var(--k));
+  padding: 0 calc(8px / var(--k));
+  border-radius: calc(15px / var(--k));
+  display: grid;
+  place-items: center;
+  font: 600 calc(17px / var(--k))/1 var(--font-mono);
+  color: var(--bg);
+  background: var(--accent);
+}
+
+/* ---- the side column: the label list and the zoom captions share one cell ---- */
+.screenshot-zoom-side {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  align-items: center;
+}
+.screenshot-zoom-side > * { grid-area: 1 / 1; }
+.screenshot-zoom-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 22px;
+}
+.screenshot-zoom-item { display: flex; align-items: baseline; gap: 18px; }
+.screenshot-zoom-n {
+  flex: none;
+  font: 600 22px/1 var(--font-mono);
+  letter-spacing: .12em;
+  color: var(--accent);
+}
+.screenshot-zoom-item-text { display: grid; gap: 6px; }
+.screenshot-zoom-item-label { font-size: 32px; line-height: 1.2; font-weight: 700; color: var(--ink); }
+.screenshot-zoom-item-note { font-size: var(--fs-caption); line-height: 1.35; color: var(--ink-2); }
+.screenshot-zoom-cap { align-self: center; }
+.screenshot-zoom-count {
+  margin: 0 0 18px;
+  font: 600 22px/1 var(--font-mono);
+  letter-spacing: .12em;
+  color: var(--muted);
+}
+.screenshot-zoom-pill {
+  display: inline-block;
+  margin: 0;
+  padding: 10px 24px 12px;
+  border-radius: 999px;
+  font-size: 36px;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -.01em;
+  color: var(--bg);
+  background: var(--accent);
+}
+.screenshot-zoom-note {
+  margin: 20px 0 0;
+  font-size: 30px;
+  line-height: 1.35;
+  color: var(--ink-2);
+}
+
+/* ================================================== live stage: zoom, one caption, one mark */
+html.js:not(.rm):not(.print) .screenshot-zoom-layer { transition: transform .6s var(--inout); }
+html.js:not(.rm):not(.print) .screenshot-zoom-root:has(.screenshot-zoom-cap[data-r="1"].in) .screenshot-zoom-layer { transform: var(--z1); }
+html.js:not(.rm):not(.print) .screenshot-zoom-root:has(.screenshot-zoom-cap[data-r="2"].in) .screenshot-zoom-layer { transform: var(--z2); }
+html.js:not(.rm):not(.print) .screenshot-zoom-root:has(.screenshot-zoom-cap[data-r="3"].in) .screenshot-zoom-layer { transform: var(--z3); }
+html.js:not(.rm):not(.print) .screenshot-zoom-root:has(.screenshot-zoom-cap[data-r="4"].in) .screenshot-zoom-layer { transform: var(--z4); }
+/* in the live stage the list carries labels only (an index of the zooms); the notes come with each cap */
+html.js:not(.rm):not(.print) .screenshot-zoom-item-note { display: none; }
+html.js:not(.rm):not(.print) .screenshot-zoom-mark > b { display: none; }
+html.js:not(.rm):not(.print) .screenshot-zoom-mark {
+  opacity: 0;
+  transition: opacity var(--t-step) var(--ease);
+}
+html.js:not(.rm):not(.print) .screenshot-zoom-root:has(.screenshot-zoom-cap[data-r="1"].in) .screenshot-zoom-mark[data-r="1"],
+html.js:not(.rm):not(.print) .screenshot-zoom-root:has(.screenshot-zoom-cap[data-r="2"].in) .screenshot-zoom-mark[data-r="2"],
+html.js:not(.rm):not(.print) .screenshot-zoom-root:has(.screenshot-zoom-cap[data-r="3"].in) .screenshot-zoom-mark[data-r="3"],
+html.js:not(.rm):not(.print) .screenshot-zoom-root:has(.screenshot-zoom-cap[data-r="4"].in) .screenshot-zoom-mark[data-r="4"] {
+  opacity: 1;
+  transition-delay: .45s;
+}
+/* the list steps aside while a caption is in; it comes back on the way to step 0 */
+html.js:not(.rm):not(.print) .screenshot-zoom-list {
+  transition: opacity var(--t-step) var(--ease), visibility 0s linear 0s;
+}
+html.js:not(.rm):not(.print) .screenshot-zoom-root:has(.screenshot-zoom-cap.in) .screenshot-zoom-list {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity calc(var(--t-step) * .6) var(--ease), visibility 0s linear calc(var(--t-step) * .6);
+}
+/* a caption that is not in is gone from the reading order too (not only transparent) */
+html.js:not(.rm):not(.print) .screenshot-zoom-caps > .screenshot-zoom-cap {
+  transition:
+    opacity var(--t-step) var(--ease) .12s,
+    transform var(--t-step) var(--ease) .12s,
+    visibility 0s linear 0s;
+}
+html.js:not(.rm):not(.print) .screenshot-zoom-caps > .screenshot-zoom-cap:not(.in) {
+  visibility: hidden;
+  transition:
+    opacity calc(var(--t-step) * .6) var(--ease),
+    transform calc(var(--t-step) * .6) var(--ease),
+    visibility 0s linear calc(var(--t-step) * .6);
+}
+
+/* ================================== no JS, failsafe, reduced motion, print: the whole picture */
+html:not(.js) .screenshot-zoom-caps,
+html.rm .screenshot-zoom-caps,
+html.print .screenshot-zoom-caps { visibility: hidden; }
+html:not(.js) .screenshot-zoom-cap,
+html.rm .screenshot-zoom-cap,
+html.print .screenshot-zoom-cap { visibility: hidden !important; }
+/* reduced motion: the frame never zooms; the step lights its row (accent) and dims the other marks */
+html.rm .screenshot-zoom-root:has(.screenshot-zoom-cap.in) .screenshot-zoom-mark { opacity: .35; }
+html.rm .screenshot-zoom-root:has(.screenshot-zoom-cap[data-r="1"].in) .screenshot-zoom-mark[data-r="1"],
+html.rm .screenshot-zoom-root:has(.screenshot-zoom-cap[data-r="2"].in) .screenshot-zoom-mark[data-r="2"],
+html.rm .screenshot-zoom-root:has(.screenshot-zoom-cap[data-r="3"].in) .screenshot-zoom-mark[data-r="3"],
+html.rm .screenshot-zoom-root:has(.screenshot-zoom-cap[data-r="4"].in) .screenshot-zoom-mark[data-r="4"] { opacity: 1; }
+html.rm .screenshot-zoom-root:has(.screenshot-zoom-cap[data-r="1"].in) .screenshot-zoom-item[data-r="1"] .screenshot-zoom-item-label,
+html.rm .screenshot-zoom-root:has(.screenshot-zoom-cap[data-r="2"].in) .screenshot-zoom-item[data-r="2"] .screenshot-zoom-item-label,
+html.rm .screenshot-zoom-root:has(.screenshot-zoom-cap[data-r="3"].in) .screenshot-zoom-item[data-r="3"] .screenshot-zoom-item-label,
+html.rm .screenshot-zoom-root:has(.screenshot-zoom-cap[data-r="4"].in) .screenshot-zoom-item[data-r="4"] .screenshot-zoom-item-label { color: var(--accent); }

@@ -1,0 +1,321 @@
+/* deck-studio · deck.css (kit-owned, re-synced by sync-kit.sh; never edit it inside an app).
+   Modes, set on <html> by the boot script and the runtime:
+     (none)        no JS, or html.deck-static (failsafe): every slide stacked in flow, every step visible
+     .js           the stage: one slide at a time, 1920 x 1080 scaled by --deck-scale
+     .deck-ready   the runtime mounted
+     .rm           reduced motion: steps still gate (opacity only), no transitions, no animations
+     .print        ?print: every slide stacked as a 1920 x 1080 page, every step in, no hud
+     .presenter    ?presenter: the presenter view
+   Hidden step states live only under html.js:not(.rm):not(.print), plus the opacity gate under html.js.rm. */
+
+/* ================================================================== base */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+img, video, svg { display: block; max-width: none; }
+
+/* a slide is always a 1920 x 1080 box; its children lay out inside it in px */
+.slide {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+}
+.deck-stage { width: 1920px; }
+
+/* ===================================================== no JS and failsafe
+   A readable document: slides stacked, each at its design size, zoomed to the window by a ladder
+   (CSS zoom; no script to compute a ratio). */
+html:not(.js) body { overflow-x: hidden; }
+html:not(.js) .deck-stage { margin: 0 auto; }
+html:not(.js) .slide { border-bottom: 1px solid var(--line); }
+@media (max-width: 1919px) { html:not(.js) .deck-stage { zoom: .74; } }
+@media (max-width: 1420px) { html:not(.js) .deck-stage { zoom: .66; } }
+@media (max-width: 1260px) { html:not(.js) .deck-stage { zoom: .49; } }
+@media (max-width: 940px)  { html:not(.js) .deck-stage { zoom: .32; } }
+@media (max-width: 610px)  { html:not(.js) .deck-stage { zoom: .19; } }
+/* a swap group shows its last member when nothing drives it */
+html:not(.js) .deck-swap > [data-step-swap]:not(:last-child) { visibility: hidden; }
+html:not(.js) .deck-hud, html:not(.js) .deck-progress, html:not(.js) .deck-keys { display: none; }
+
+/* ================================================================ stage */
+html.js:not(.print), html.js:not(.print) body { height: 100%; overflow: hidden; }
+html.js:not(.print) .deck-viewport {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--bg);
+  user-select: none;
+  -webkit-user-select: none;
+}
+html.js:not(.print) .deck-stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1920px;
+  height: 1080px;
+  margin: -540px 0 0 -960px;
+  transform: scale(var(--deck-scale, 1));
+  transform-origin: 50% 50%;
+  background: var(--bg);
+  overflow: hidden;
+}
+html.js:not(.print) .slide { position: absolute; inset: 0; display: none; }
+html.js:not(.print) .slide.is-current,
+html.js:not(.print) .slide.is-leaving { display: block; }
+.slide.is-current { z-index: 2; }
+.slide.is-leaving { z-index: 1; pointer-events: none; }
+
+/* slide transitions: the entering slide animates, the leaving one fades at 60% (fade) or holds (wipe) */
+@keyframes deck-in-fade { from { opacity: 0; transform: translateY(12px); } }
+@keyframes deck-in-wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes deck-out-fade { to { opacity: 0; } }
+html.js:not(.rm):not(.print) .slide.is-current[data-transition="fade"] { animation: deck-in-fade var(--t-slide) var(--ease) both; }
+html.js:not(.rm):not(.print) .slide.is-current[data-transition="wipe"] { animation: deck-in-wipe calc(var(--t-slide) * 1.4) var(--inout) both; }
+html.js:not(.rm):not(.print) .slide.is-leaving[data-leave="fade"] { animation: deck-out-fade calc(var(--t-slide) * .6) var(--ease) both; }
+
+/* ================================================================= steps
+   A hidden step keeps its box (opacity and transform only): nothing on the slide moves when it enters.
+   Entrance: --t-step with the ladder delay (--d, else --i x --stagger). Exit: 60%, no delay. */
+html.js:not(.rm):not(.print) [data-step] {
+  transition:
+    opacity var(--t-step) var(--ease) var(--d, calc(var(--i, 0) * var(--stagger))),
+    transform var(--t-step) var(--ease) var(--d, calc(var(--i, 0) * var(--stagger)));
+}
+html.js:not(.rm):not(.print) [data-step]:not(.in) {
+  opacity: 0;
+  transform: translateY(22px);
+  transition-duration: calc(var(--t-step) * .6);
+  transition-delay: 0s;
+}
+
+/* mask: SplitWords inside, the words rise out of their own line box */
+html.js:not(.rm):not(.print) [data-step][data-rv="mask"] { opacity: 1; transform: none; transition: none; }
+html.js:not(.rm):not(.print) [data-step][data-rv="mask"] .w i {
+  transition: transform calc(var(--t-step) * 1.6) var(--ease) var(--d, calc(var(--i, 0) * var(--stagger-word)));
+}
+html.js:not(.rm):not(.print) [data-step][data-rv="mask"]:not(.in) .w i {
+  transform: translateY(112%);
+  transition-duration: calc(var(--t-step) * .6);
+  transition-delay: 0s;
+}
+
+/* pop and side: spring */
+html.js:not(.rm):not(.print) [data-step][data-rv="pop"],
+html.js:not(.rm):not(.print) [data-step][data-rv="side"] {
+  transition:
+    opacity var(--t-step) var(--ease) var(--d, calc(var(--i, 0) * var(--stagger))),
+    transform calc(var(--t-step) * 1.3) var(--spring) var(--d, calc(var(--i, 0) * var(--stagger)));
+}
+html.js:not(.rm):not(.print) [data-step][data-rv="pop"]:not(.in) { transform: translateY(18px) scale(.94); }
+html.js:not(.rm):not(.print) [data-step][data-rv="side"]:not(.in) { transform: translateX(-40px); }
+
+/* wipe: a clip from the left, opacity stays */
+html.js:not(.rm):not(.print) [data-step][data-rv="wipe"] {
+  transition: clip-path calc(var(--t-step) * 1.4) var(--inout) var(--d, calc(var(--i, 0) * var(--stagger)));
+  clip-path: inset(0 0 0 0);
+}
+html.js:not(.rm):not(.print) [data-step][data-rv="wipe"]:not(.in) {
+  opacity: 1;
+  transform: none;
+  clip-path: inset(0 100% 0 0);
+  transition-duration: calc(var(--t-step) * .6);
+}
+
+/* blur: text on flat colour only, never a photograph */
+html.js:not(.rm):not(.print) [data-step][data-rv="blur"] {
+  transition:
+    opacity var(--t-step) var(--ease) var(--d, calc(var(--i, 0) * var(--stagger))),
+    transform var(--t-step) var(--ease) var(--d, calc(var(--i, 0) * var(--stagger))),
+    filter var(--t-step) var(--ease) var(--d, calc(var(--i, 0) * var(--stagger)));
+}
+html.js:not(.rm):not(.print) [data-step][data-rv="blur"]:not(.in) { filter: blur(6px); }
+
+/* swap groups: members share one grid cell; only the newest member is .in (the runtime decides) */
+.deck-swap { display: grid; }
+.deck-swap > [data-step-swap] { grid-area: 1 / 1; }
+html.js [data-step-swap]:not(.in) { pointer-events: none; }
+
+/* ======================================================= word masks
+   Generous padding so diacritics (Ă, Â, Î above; ș, ț commas below) are never cut. */
+.w {
+  display: inline-block;
+  overflow: clip;
+  padding: .1em .06em .14em;
+  margin: -.1em -.06em -.14em;
+  vertical-align: top;
+}
+.w i { display: inline-block; font-style: inherit; }
+
+/* =============================================================== failsafe
+   If the runtime never adds html.deck-ready, hidden steps appear at the deadline on their own
+   (the boot script also swaps html.js for html.deck-static at the same deadline). */
+@keyframes deck-failsafe { to { opacity: 1; transform: none; clip-path: inset(0 0 0 0); filter: none; } }
+html.js:not(.rm):not(.deck-ready) [data-step],
+html.js:not(.rm):not(.deck-ready) [data-step] .w i { animation: deck-failsafe 0s var(--failsafe) forwards; }
+
+/* ======================================================= reduced motion
+   No transitions and no animations; steps still gate visibility (a presenter needs them). */
+html.rm *, html.rm *::before, html.rm *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+html.js.rm:not(.print) [data-step]:not(.in) { opacity: 0; }
+
+/* =================================================================== print
+   ?print: every slide is one 1920 x 1080 page, every step in, no hud, no transitions. */
+@page { size: 1920px 1080px; margin: 0; }
+html.print, html.print body { height: auto; overflow: visible; }
+html.print .deck-viewport { position: static; }
+html.print .deck-stage { position: static; transform: none; margin: 0; height: auto; }
+html.print .slide { display: block; position: relative; }
+html.print .slide:not(:last-child) { break-after: page; page-break-after: always; }
+html.print [data-step-swap]:not(.in) { visibility: hidden; }
+html.print .deck-hud, html.print .deck-progress, html.print .deck-keys { display: none !important; }
+html.print *, html.print *::before, html.print *::after { animation: none !important; transition: none !important; }
+html.print, html.print body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+@media print {
+  html, body { height: auto !important; overflow: visible !important; }
+  .deck-viewport { position: static !important; }
+  .deck-stage { position: static !important; transform: none !important; margin: 0 !important; height: auto !important; zoom: 1 !important; }
+  .slide { display: block !important; position: relative !important; border: 0 !important; }
+  .slide:not(:last-child) { break-after: page; }
+  [data-step]:not([data-step-swap]), [data-step] .w i { opacity: 1 !important; transform: none !important; clip-path: none !important; filter: none !important; }
+  .deck-hud, .deck-progress, .deck-keys { display: none !important; }
+}
+
+/* ===================================================================== hud */
+.deck-hud {
+  position: fixed;
+  right: 28px;
+  bottom: 18px;
+  z-index: 20;
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  font: 500 13px/1 var(--font-mono);
+  letter-spacing: .12em;
+  color: var(--muted);
+  opacity: .55;
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+.deck-hud-jump { color: var(--accent); opacity: 1; }
+.deck-hud-jump:empty { display: none; }
+.deck-progress {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  z-index: 20;
+  pointer-events: none;
+}
+.deck-progress > i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  opacity: .7;
+  transform-origin: 0 50%;
+  transform: scaleX(var(--p, 0));
+  transition: transform var(--t-slide) var(--ease);
+}
+html.hud-off .deck-hud, html.hud-off .deck-progress { display: none; }
+
+/* key list, toggled with ? */
+.deck-keys {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: none;
+  place-items: center;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+}
+html.keys-on .deck-keys { display: grid; }
+.deck-keys dl {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 10px 28px;
+  margin: 0;
+  padding: 32px 40px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--bg);
+  font-size: 16px;
+  line-height: 1.4;
+}
+.deck-keys dt { font: 600 14px/1.4 var(--font-mono); color: var(--accent); text-align: right; }
+.deck-keys dd { margin: 0; color: var(--ink-2); }
+
+/* =============================================================== presenter */
+html.presenter .deck-hud, html.presenter .deck-progress { display: none; }
+.presenter {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: 24px;
+  padding: 24px;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 18px;
+  line-height: 1.45;
+}
+.presenter-col { display: flex; flex-direction: column; gap: 14px; min-height: 0; }
+html.js:not(.print) .presenter .deck-viewport {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  flex: none;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.presenter-label { font: 500 13px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.presenter-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font: 600 22px/1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.presenter-timer { font-size: 44px; color: var(--accent); }
+.presenter-notes {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink-2);
+  font-size: 22px;
+  line-height: 1.5;
+}
+.presenter-notes p { margin: 0 0 .6em; }
+.presenter-notes ul { margin: 0 0 .6em; padding-left: 1.1em; }
+.presenter-notes strong { color: var(--ink); }
+.presenter-notes-empty { color: var(--muted); font-style: italic; }
+.presenter-end {
+  display: grid;
+  place-items: center;
+  width: 1920px;
+  height: 1080px;
+  font: 600 64px/1 var(--font-mono);
+  color: var(--muted);
+}
+/* the next slide is shown at its final frame */
+.presenter-next [data-step], .presenter-next [data-step] .w i {
+  opacity: 1 !important; transform: none !important; clip-path: none !important; filter: none !important; transition: none !important; animation: none !important;
+}
+.presenter-next .slide { animation: none !important; }

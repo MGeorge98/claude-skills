@@ -1,0 +1,3 @@
+/* App-owned. Tailwind 4 for one-off utilities in src/deck.tsx or new slide types; the kit itself does not
+   depend on it. Loaded before tokens.css and deck.css, so the kit rules win over the preflight. */
+@import "tailwindcss";
