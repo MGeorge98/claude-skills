@@ -1,0 +1,84 @@
+/* sticky-split: a sticky media panel with text beats beside it (below it on phones).
+   Static (no JS, html.rm, before mount): a readable column, every beat under its own panel.
+   Engine mounted (html.mo): a tall track with one pinned 100svh screen. The engine drives the text beats
+   ([data-beat]); panels and dots are pure functions of --p here (opacity and transform only). */
+
+.sticky-split { --ss-gut: var(--gut, max(16px, 6vw)); position: relative; padding: 72px var(--ss-gut); color: var(--ink); }
+.sticky-split-stage { display: grid; gap: 56px; max-width: 720px; margin-inline: auto; }
+.sticky-split-step { display: grid; gap: 22px; }
+.sticky-split-frame, .sticky-split-dots { display: none; }
+
+.sticky-split-panel { margin: 0; border-radius: 16px; overflow: hidden; background: color-mix(in oklab, var(--ink) 6%, var(--bg)); border: 1px solid var(--line); }
+.sticky-split-panel img { display: block; width: 100%; height: auto; }
+.sticky-split-node { width: 100%; aspect-ratio: 4 / 3; display: grid; place-items: center; }
+
+.sticky-split-beat { max-width: 34rem; }
+.sticky-split-k { margin: 0 0 12px; font-family: var(--font-mono, ui-monospace, Menlo, monospace); font-size: 0.75rem; line-height: 1.4; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.sticky-split-t { margin: 0; font-weight: 800; font-size: clamp(28px, 7.6vw, 36px); line-height: 1.08; letter-spacing: -0.03em; color: var(--ink); text-wrap: balance; }
+.sticky-split-l { margin: 14px 0 0; font-size: 1.0625rem; line-height: 1.55; color: var(--ink-2); max-width: 38ch; }
+.sticky-split-l + .sticky-split-l { margin-top: 8px; }
+@media (max-width: 480px) { .sticky-split-k { letter-spacing: 0.08em; } }
+
+/* ---------- engine mounted: tall track, pinned screen ---------- */
+html.mo:not(.rm) .sticky-split { height: var(--len, 300vh); padding: 0; --p: 0; }
+/* panel box: phones get the top 40svh, the beats the rest */
+html.mo:not(.rm) .sticky-split-stage {
+  position: sticky; top: 0; height: 100vh; height: 100svh; display: block; max-width: none; overflow: hidden;
+  --mt: 12px; --ml: var(--ss-gut); --mr: var(--ss-gut); --mh: calc(40% - 12px);
+  contain: layout paint style;
+}
+html.mo:not(.rm) .sticky-split-frame,
+html.mo:not(.rm) .sticky-split-panel {
+  display: block; position: absolute; top: var(--mt); left: var(--ml); right: var(--mr); height: var(--mh);
+  margin: 0; border-radius: 16px; overflow: hidden;
+}
+html.mo:not(.rm) .sticky-split-frame { background: color-mix(in oklab, var(--ink) 5%, var(--bg)); }
+html.mo:not(.rm) .sticky-split-panel img { width: 100%; height: 100%; object-fit: cover; }
+html.mo:not(.rm) .sticky-split-node { height: 100%; aspect-ratio: auto; }
+
+/* on: 1 inside this panel's window, smootherstep cross-fades over .05 around the handovers (--pi in, --po out).
+   The first panel has --pi -1 (on from p = 0, no dead first frame), the last --po 9 (holds to the end). */
+html.mo:not(.rm) :is(.sticky-split-panel, .sticky-split-dots li) {
+  --ti: clamp(0, (var(--p) - var(--pi) + 0.025) / 0.05, 1);
+  --to: clamp(0, (var(--p) - var(--po) + 0.025) / 0.05, 1);
+  --ei: calc(var(--ti) * var(--ti) * var(--ti) * (var(--ti) * (var(--ti) * 6 - 15) + 10));
+  --eo: calc(var(--to) * var(--to) * var(--to) * (var(--to) * (var(--to) * 6 - 15) + 10));
+  --on: calc(var(--ei) * (1 - var(--eo)));
+}
+/* scale .96 -> 1 across the beat window [--sa, --sb]; clamped, so it never rests above 1 */
+html.mo:not(.rm) .sticky-split-panel {
+  --k: clamp(0, (var(--p) - var(--sa)) / (var(--sb) - var(--sa)), 1);
+  opacity: var(--on);
+  transform: scale(calc(0.96 + 0.04 * var(--k)));
+  border: 0;
+}
+
+html.mo:not(.rm) .sticky-split-beat {
+  position: absolute; left: 0; right: 0; top: 40%; bottom: 0; max-width: none;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 18px var(--ss-gut) 28px; opacity: 0; visibility: hidden;
+}
+html.mo:not(.rm) .sticky-split-first .sticky-split-beat { opacity: 1; visibility: visible; }
+
+html.mo:not(.rm) .sticky-split-dots {
+  display: flex; gap: 8px; position: absolute; z-index: 2; margin: 0; list-style: none;
+  left: calc(var(--ml) + 12px); top: calc(var(--mt) + var(--mh) - 36px);
+  padding: 8px 10px; border-radius: 999px; background: color-mix(in oklab, var(--bg) 72%, transparent);
+}
+html.mo:not(.rm) .sticky-split-dots li { position: relative; width: 8px; height: 8px; border-radius: 50%; background: color-mix(in oklab, var(--ink) 32%, transparent); }
+html.mo:not(.rm) .sticky-split-dots i { position: absolute; inset: -1px; border-radius: 50%; background: var(--accent); opacity: var(--on); transform: scale(calc(0.6 + 0.4 * var(--on))); }
+
+.sticky-split.live :is(.sticky-split-panel, .sticky-split-dots i) { will-change: transform, opacity; }
+
+@media (min-width: 820px) {
+  html.mo:not(.rm) .sticky-split { height: var(--len-d, var(--len, 360vh)); }
+  /* panel 48% wide, full height minus a 20px frame; flip puts it on the right */
+  html.mo:not(.rm) .sticky-split-stage { --mt: 20px; --ml: 20px; --mr: 52%; --mh: calc(100% - 40px); }
+  html.mo:not(.rm) .sticky-split-flip .sticky-split-stage { --ml: 52%; --mr: 20px; }
+  html.mo:not(.rm) .sticky-split-beat { left: 48%; right: 0; top: 0; padding: 0 max(40px, 6vw); }
+  html.mo:not(.rm) .sticky-split-flip .sticky-split-beat { left: 0; right: 48%; }
+  html.mo:not(.rm) .sticky-split-dots { left: calc(var(--ml) + 20px); top: calc(var(--mt) + var(--mh) - 44px); }
+  .sticky-split-t { font-size: clamp(40px, 4.2vw, 64px); }
+  .sticky-split-l { font-size: 1.1875rem; }
+  .sticky-split-k { font-size: 0.8125rem; margin-bottom: 18px; }
+}

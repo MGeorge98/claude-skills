@@ -1,0 +1,108 @@
+/* set-collage: project shots in a fixed grid. Base = final state. Running state (clip reveal on the shots, the
+   wrapper is only observed) is gated html.js:not(.rm). Ladder: --i 0..5 x 70ms + 0.9s = 1.25s, inside the 1.4s budget. */
+
+.set-collage {
+  --sc-gut: max(20px, 7vw);
+  --sc-gap: clamp(10px, 1.4vw, 16px);
+  --sc-row: clamp(150px, 19vw, 280px);
+  --sc-r: 12px;
+  padding: clamp(48px, 9vh, 96px) max(var(--sc-gut), calc((100% - 1240px) / 2));
+  box-sizing: border-box;
+  color: var(--ink);
+}
+.set-collage-head { margin-bottom: clamp(20px, 3.5vh, 36px); }
+.set-collage-label {
+  margin: 0 0 12px;
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.set-collage-h {
+  margin: 0;
+  max-width: 18ch;
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-weight: 800;
+  font-size: clamp(32px, 8.6vw, 44px);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+/* ---- grid: mobile first, two columns, the first shot full width ---- */
+.set-collage-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sc-gap);
+}
+.set-collage-shot {
+  position: relative;
+  display: block;
+  min-width: 0;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: var(--sc-r);
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  text-decoration: none;
+  --sc-from: inset(0 0 100% 0 round var(--sc-r));
+  --sc-to: inset(0 0 0 0 round var(--sc-r));
+}
+.set-collage-shot[data-dir="x"] { --sc-from: inset(0 100% 0 0 round var(--sc-r)); }
+.set-collage-shot:first-child { grid-column: 1 / -1; aspect-ratio: 16 / 10; }
+.set-collage-n4 > .set-collage-shot:last-child,
+.set-collage-n6 > .set-collage-shot:last-child { grid-column: 1 / -1; aspect-ratio: 16 / 8; }
+.set-collage-img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+.set-collage-cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  background: color-mix(in oklab, var(--bg) 90%, transparent);
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  line-height: 1.3;
+  color: var(--ink-2);
+}
+.set-collage-arrow { flex: none; color: var(--accent); }
+.set-collage-shot:hover, .set-collage-shot:focus-visible { border-color: color-mix(in oklab, var(--accent) 60%, transparent); }
+.set-collage-shot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---- running state: the shots are clipped, the observed wrapper never is ---- */
+html.js:not(.rm) .set-collage-grid:not(.in) .set-collage-shot { clip-path: var(--sc-from); }
+html.js:not(.rm) .set-collage-grid.in .set-collage-shot { clip-path: var(--sc-to); }
+html.js:not(.rm) .set-collage-shot {
+  transition: clip-path 0.9s var(--ls-ease) calc(var(--i, 0) * 70ms), border-color var(--ls-t-ui) var(--ls-ease);
+}
+/* failsafe: no engine, the shots open on their own at the deadline */
+html.js:not(.rm):not(.mo) .set-collage-shot { animation: set-collage-open 0s var(--ls-failsafe) forwards; }
+@keyframes set-collage-open { to { clip-path: inset(0 0 0 0 round 12px); } }
+
+/* ---- desktop: three columns, one tall shot ---- */
+@media (min-width: 761px) {
+  .set-collage-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: var(--sc-row); }
+  .set-collage-shot, .set-collage-shot:first-child, .set-collage-n4 > .set-collage-shot:last-child, .set-collage-n6 > .set-collage-shot:last-child {
+    aspect-ratio: auto;
+    grid-column: auto;
+    grid-row: auto;
+  }
+  .set-collage-shot:first-child { grid-column: 1; grid-row: 1 / span 2; }
+  .set-collage-n3 > .set-collage-shot:nth-child(2),
+  .set-collage-n3 > .set-collage-shot:nth-child(3) { grid-column: 2 / span 2; }
+  .set-collage-n4 > .set-collage-shot:nth-child(4) { grid-column: 2 / span 2; }
+  .set-collage-n6 > .set-collage-shot:nth-child(6) { grid-column: 1 / -1; }
+  .set-collage-n7 > .set-collage-shot:nth-child(6) { grid-column: 1 / span 2; }
+  .set-collage-n7 > .set-collage-shot:nth-child(7) { grid-column: 3; }
+  .set-collage-cap { font-size: 0.75rem; padding: 10px 14px; }
+  .set-collage-h { font-size: clamp(40px, 4.4vw, 64px); }
+}

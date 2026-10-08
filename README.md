@@ -8,6 +8,7 @@ Skills for Claude Code (and any agent that reads `SKILL.md` packages).
 npx skills add MGeorge98/claude-skills --skill pet-studio
 npx skills add MGeorge98/claude-skills --skill ui-book
 npx skills add MGeorge98/claude-skills --skill orchestrator
+npx skills add MGeorge98/claude-skills --skill landing-studio
 ```
 
 ## Skills
@@ -43,3 +44,13 @@ Files: `orchestrator/SKILL.md`.
 ## License
 
 MIT
+
+### landing-studio
+
+Orchestrator playbook plus a code kit for a story-driven landing page a brand team would ship: a Next.js 15 app built from the kit (attribute-driven scroll engine, pinned scenes with a smoothed `--p`, word masks, brand cascades, a lead API and a branded confirmation email), every claim traced to a facts ledger, verified by audit scripts (fold, scrollWidth, flick, paints, CLS, LCP unthrottled and under the Lighthouse mobile profile, JS ceiling, facts gate) and contact sheets you look at. Sixteen scenes in `kit/scenes/INDEX.md`, each with a spec, example data and a preview route: hero-words, pinned-beats, brand-pour, form-popup, drop-dock, dealt-cards, journey-path, portrait-hero, set-collage, intro-sequence, sticky-split, horizontal-pinned, before-after, timeline, number-wall, logo-marquee.
+
+Invoke with `/landing-studio` and the material (an event, a talk, a deck, a product); the page's language follows the request. Phases: brief, facts, brand, storyboard (three directions, owner picks), scaffold, one reference scene then a fan-out of one agent per scene in its own clone, audit from pixels, ship through the owner.
+
+What it encodes from real runs: the finished page must exist without motion (no JS, reduced motion and a dead bundle all render the settled composition, with a 3.5 s failsafe); pinned layouts gate on the engine, not on JS; every child of a pin is a pure function of `--p`; transforms, opacity and clip-path only; no em dashes, no invented facts; never raise a threshold to turn a red run green; a report that describes a frame correctly can still miss the bug in it, so look at the frames yourself.
+
+Files: `landing-studio/SKILL.md` (the method), `CONTRACT.md` (the frozen kit contract), `kit/` (engine, CSS, React parts, scenes, backend, app template with `sync-kit.sh`), `scripts/` (audit, perf, gate, sheet, shoot, email preview), `references/` (brief, facts ledger, storyboard, motion language, parts contract, gotchas, clichés, handoff), `gallery/` (audit sheets of the kit demos).

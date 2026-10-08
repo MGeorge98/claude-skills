@@ -1,0 +1,92 @@
+/* form-popup: lead form card, success card and confirmation dialog. Nothing here is hidden before JS:
+   the form is server-rendered by the client component's first pass and usable as soon as it hydrates. */
+
+.form-popup-card {
+  --form-err: #f26d6d;
+  --form-field-bg: color-mix(in oklab, var(--bg) 82%, var(--accent) 4%);
+  display: block;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid color-mix(in oklab, var(--accent) 24%, transparent);
+  background: color-mix(in oklab, var(--bg) 80%, transparent);
+  box-shadow: 0 30px 100px -40px color-mix(in oklab, var(--accent) 35%, transparent);
+  color: var(--ink);
+  scroll-margin-top: 24px;
+}
+.form-popup-grid { display: grid; gap: 14px; }
+.form-popup-label { display: block; margin-bottom: 6px; font-size: 0.875rem; font-weight: 600; color: var(--ink-2); }
+.form-popup-field {
+  box-sizing: border-box; width: 100%;
+  background: var(--form-field-bg); color: var(--ink);
+  border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent); border-radius: 12px;
+  padding: 0.85rem 1rem;
+  font: inherit; font-size: 16px; /* 16px: iOS does not zoom on focus */
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.form-popup-field::placeholder { color: color-mix(in oklab, var(--ink) 30%, transparent); }
+.form-popup-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 15%, transparent); }
+.form-popup-field[aria-invalid="true"] { border-color: var(--form-err); }
+.form-popup-err { margin: 4px 0 0; color: var(--form-err); font-size: 0.875rem; }
+.form-popup-hp { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; left: -9999px; }
+
+.form-popup-set { margin: 4px 0 0; padding: 0; border: 0; min-width: 0; }
+.form-popup-set legend { padding: 0; margin-bottom: 8px; }
+.form-popup-opts { display: grid; gap: 8px; }
+.form-popup-opt {
+  display: flex; align-items: center; gap: 12px; min-height: 44px; box-sizing: border-box; padding: 10px 14px; border-radius: 12px; cursor: pointer;
+  border: 1px solid color-mix(in oklab, var(--ink) 10%, transparent); background: color-mix(in oklab, var(--ink) 2%, transparent);
+  font-size: 15px; transition: border-color 0.15s, background-color 0.15s;
+}
+.form-popup-opt-on { border-color: color-mix(in oklab, var(--accent) 50%, transparent); background: color-mix(in oklab, var(--accent) 8%, transparent); }
+.form-popup-opt input, .form-popup-consent input { width: 16px; height: 16px; flex: none; accent-color: var(--accent); margin: 0; }
+.form-popup-consent { display: flex; align-items: flex-start; gap: 12px; margin-top: 4px; cursor: pointer; font-size: 0.875rem; line-height: 1.6; color: var(--muted); }
+.form-popup-consent input { margin-top: 4px; }
+.form-popup-consent a { color: var(--ink-2); text-decoration: underline; text-underline-offset: 3px; }
+
+.form-popup-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; width: 100%; min-height: 52px;
+  margin-top: 4px; padding: 0.95rem 1.25rem; border: 0; border-radius: 12px; cursor: pointer;
+  background: var(--accent); color: var(--bg); font: inherit; font-weight: 800; font-size: 1.05rem; text-decoration: none;
+  box-shadow: 0 10px 30px -12px color-mix(in oklab, var(--accent) 60%, transparent);
+  transition: background-color 0.15s, transform 0.09s var(--ls-spring);
+}
+.form-popup-btn:hover { background: var(--accent-2); }
+.form-popup-btn:active { transform: scale(0.98); }
+.form-popup-btn:disabled { opacity: 0.6; cursor: default; }
+.form-popup-small { margin: 0; font-size: 0.8125rem; color: var(--muted); }
+.form-popup-center { text-align: center; }
+
+/* success card */
+.form-popup-done { display: grid; gap: 10px; }
+.form-popup-done:focus { outline: none; }
+.form-popup-kicker { margin: 0; font-family: var(--font-mono, ui-monospace, Menlo, monospace); font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.form-popup-done-t { margin: 10px 0 0; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
+.form-popup-done-d { margin: 0; color: var(--ink-2); line-height: 1.6; }
+.form-popup-done-d b { color: var(--ink); }
+.form-popup-foot { margin-top: 6px; }
+
+/* dialog */
+.form-popup-pop { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 20px; }
+.form-popup-pop-bg { position: absolute; inset: 0; background: color-mix(in oklab, var(--bg) 74%, transparent); }
+.form-popup-pop-box {
+  position: relative; box-sizing: border-box; width: min(100%, 460px); padding: 30px 26px 24px; border-radius: 22px;
+  border: 1px solid color-mix(in oklab, var(--accent) 40%, transparent);
+  background: color-mix(in oklab, var(--bg) 92%, var(--accent) 8%); color: var(--ink);
+  box-shadow: 0 40px 120px -30px rgba(0, 0, 0, 0.8), 0 0 80px -30px color-mix(in oklab, var(--accent) 50%, transparent);
+  text-align: center; display: grid; justify-items: center; gap: 12px;
+}
+.form-popup-pop-ok { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--accent); color: var(--bg); }
+.form-popup-pop-t { margin: 4px 0 0; font-weight: 800; font-size: 1.5rem; line-height: 1.2; letter-spacing: -0.02em; }
+.form-popup-pop-d { margin: 0; color: var(--ink-2); line-height: 1.5; max-width: 32ch; }
+.form-popup-pop-go { margin-top: 8px; }
+.form-popup-pop-dl { color: var(--accent-2); font-size: 0.9rem; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: color-mix(in oklab, var(--accent-2) 40%, transparent); }
+
+html.js:not(.rm) .form-popup-pop-bg { animation: form-popup-fade 0.3s ease both; }
+html.js:not(.rm) .form-popup-pop-box { animation: form-popup-pop-in 0.6s var(--ls-spring) both; }
+html.js:not(.rm) .form-popup-pop-ok path { stroke-dasharray: 1; animation: form-popup-tick 0.5s var(--ls-ease) 0.25s both; }
+@keyframes form-popup-fade { from { opacity: 0; } }
+@keyframes form-popup-pop-in { from { opacity: 0; transform: translateY(24px) scale(0.92); } }
+@keyframes form-popup-tick { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+
+@media (min-width: 640px) { .form-popup-card { padding: 24px; } }

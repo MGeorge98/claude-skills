@@ -1,0 +1,158 @@
+/* landing-studio · motion contract CSS (see kit/README.md).
+   Gate: every hidden or pinned state sits under html.js:not(.rm). Without JS, under reduced
+   motion and under html.ls-static (boot failsafe) the page is the finished static document. */
+
+/* ================================================================ reveals */
+html.js:not(.rm) [data-rv] {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity var(--ls-t-fade) var(--ls-ease) var(--d, calc(var(--i, 0) * var(--ls-stagger))),
+    transform var(--ls-t-reveal) var(--ls-ease) var(--d, calc(var(--i, 0) * var(--ls-stagger)));
+}
+html.js:not(.rm) [data-rv].in { opacity: 1; transform: none; }
+
+/* mask: SplitWords inside; the words rise out of their own line box */
+html.js:not(.rm) [data-rv="mask"] { opacity: 1; transform: none; }
+html.js:not(.rm) [data-rv="mask"] .w i {
+  transform: translateY(112%);
+  transition: transform var(--ls-t-reveal) var(--ls-ease) var(--d, calc(var(--i, 0) * var(--ls-stagger-word)));
+}
+html.js:not(.rm) [data-rv="mask"].in .w i { transform: none; }
+
+/* clip / wipe: observed through the parent (a fully clipped box never intersects) */
+html.js:not(.rm) [data-rv="clip"] {
+  opacity: 1; transform: none;
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path calc(var(--ls-t-reveal) * 1.3) var(--ls-ease) var(--d, 0ms);
+}
+html.js:not(.rm) [data-rv="wipe"] {
+  opacity: 1; transform: none;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path calc(var(--ls-t-reveal) * 1.2) var(--ls-ease) var(--d, 0ms);
+}
+html.js:not(.rm) [data-rv="clip"].in,
+html.js:not(.rm) [data-rv="wipe"].in { clip-path: inset(0 0 0 0); }
+
+/* blur: text on flat colour only, small radius, never a photograph */
+html.js:not(.rm) [data-rv="blur"] {
+  filter: blur(6px);
+  transition:
+    opacity var(--ls-t-fade) var(--ls-ease) var(--d, 0ms),
+    transform var(--ls-t-reveal) var(--ls-ease) var(--d, 0ms),
+    filter var(--ls-t-fade) var(--ls-ease) var(--d, 0ms);
+}
+html.js:not(.rm) [data-rv="blur"].in { filter: none; }
+
+html.js:not(.rm) [data-rv="pop"] {
+  transform: translateY(18px) scale(.94);
+  transition:
+    opacity var(--ls-t-fade) var(--ls-ease) var(--d, 0ms),
+    transform var(--ls-t-reveal) var(--ls-spring) var(--d, 0ms);
+}
+html.js:not(.rm) [data-rv="side"] {
+  transform: translateX(-40px);
+  transition:
+    opacity var(--ls-t-fade) var(--ls-ease) var(--d, 0ms),
+    transform calc(var(--ls-t-reveal) * 1.2) var(--ls-spring) var(--d, 0ms);
+}
+html.js:not(.rm) [data-rv="pop"].in,
+html.js:not(.rm) [data-rv="side"].in { transform: none; }
+
+/* path: an <svg data-rv="path"> whose strokes carry pathLength="1" draw themselves */
+html.js:not(.rm) [data-rv="path"] { opacity: 1; transform: none; }
+html.js:not(.rm) [data-rv="path"] :is(path, line, polyline, circle, rect) {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset calc(var(--ls-t-reveal) * 1.6) var(--ls-inout) var(--d, 0ms);
+}
+html.js:not(.rm) [data-rv="path"].in :is(path, line, polyline, circle, rect) { stroke-dashoffset: 0; }
+
+/* replay reveals leave on the exit twin, with no delay */
+html.js:not(.rm) [data-replay]:not(.in) { transition-duration: var(--ls-t-fade-exit), var(--ls-t-reveal-exit); transition-delay: 0s; }
+
+/* ============================================================== count-up */
+[data-count] { font-variant-numeric: tabular-nums; }
+html.js:not(.rm) [data-count]:not([data-rv]):not(.in) { opacity: 0; }
+
+/* ===================================== word masks (SplitWords, server side)
+   Generous padding so diacritics (Ă, Â, Î above; ș, ț commas below) are never cut. */
+.w {
+  display: inline-block;
+  overflow: clip;
+  padding: .1em .06em .14em;
+  margin: -.1em -.06em -.14em;
+  vertical-align: top;
+}
+.w i { display: inline-block; font-style: inherit; }
+
+/* =============================================================== failsafe
+   If the engine never adds html.mo, everything hidden appears at the deadline on its own. */
+@keyframes ls-failsafe { to { opacity: 1; transform: none; clip-path: inset(0 0 0 0); filter: none; stroke-dashoffset: 0; } }
+html.js:not(.rm):not(.mo) [data-rv],
+html.js:not(.rm):not(.mo) [data-rv] .w i,
+html.js:not(.rm):not(.mo) [data-rv="path"] :is(path, line, polyline, circle, rect),
+html.js:not(.rm):not(.mo) [data-count] { animation: ls-failsafe 0s var(--ls-failsafe) forwards; }
+
+/* ========================================================== pinned scene
+   Gated on html.mo (engine mounted), not html.js: without the engine --p never moves, so a pin gated
+   on .js would freeze on its first frame. Before mount, without JS, under html.rm and html.ls-static
+   a scene is a readable column in flow. */
+.ls-scene { position: relative; }
+html.mo:not(.rm) .ls-scene { height: var(--len, 300vh); }
+html.mo:not(.rm) .ls-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+/* beats stack inside the stage; the first one (data-a="0" or none) shows before the engine runs */
+html.mo:not(.rm) .ls-stage > [data-beat] { position: absolute; inset: 0; }
+html.mo:not(.rm) [data-beat]:not([data-a="0"]):not([data-a=""]) { opacity: 0; visibility: hidden; }
+
+/* will-change only while the scene is on screen */
+.ls-scene.live :is([data-beat], [data-sub], [data-pour], [data-deal], [data-deal-sh], [data-bar]) {
+  will-change: transform, opacity;
+}
+
+/* parallax: the engine writes --py; `translate` keeps the element's own transform intact */
+html.mo:not(.rm) [data-px] { translate: 0 var(--py, 0px); }
+
+/* =============================================== loops: pause and toggle */
+.off, .off *, .off *::before, .off *::after { animation-play-state: paused !important; }
+html.paused *, html.paused *::before, html.paused *::after { animation-play-state: paused !important; }
+
+.ls-toggle { display: none; }
+html.js:not(.rm):not(.ls-static) .ls-toggle { display: inline-flex; }
+
+/* ======================================== static fallbacks (outrank all) */
+html.ls-static [data-rv],
+html.ls-static [data-rv] .w i,
+html.ls-static [data-count],
+html.ls-static [data-beat] {
+  opacity: 1 !important;
+  transform: none !important;
+  clip-path: none !important;
+  filter: none !important;
+  visibility: visible !important;
+}
+
+/* reduced motion: the final state, no transitions, no loops */
+html.rm *, html.rm *::before, html.rm *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+html.rm [data-rv],
+html.rm [data-rv] .w i,
+html.rm [data-count],
+html.rm [data-beat],
+html.rm [data-sub] {
+  opacity: 1 !important;
+  transform: none !important;
+  clip-path: none !important;
+  filter: none !important;
+  visibility: visible !important;
+}
+html.rm [data-rv="path"] :is(path, line, polyline, circle, rect) { stroke-dashoffset: 0 !important; }

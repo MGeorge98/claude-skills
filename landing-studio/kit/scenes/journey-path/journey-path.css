@@ -1,0 +1,124 @@
+/* journey-path: steps on a line. The <ol data-rv="path"> gets .in from the kit observer; the choreography is
+   keyed on .in with --i ladders (160ms per step). Segments: scaleY on mobile, scaleX from 761px.
+   Dot k sits at 100ms + i x 160, segment after it at 220ms + i x 160, card at 150ms + i x 160, the hero card
+   lands at 680ms on the spring. Whole entrance ends by about 1.4s. Base state is the final state. */
+
+.journey-path {
+  --jp-hero: var(--journey-path-guest, var(--accent));
+  box-sizing: border-box;
+  padding: clamp(56px, 10vh, 120px) max(20px, 7vw);
+  color: var(--ink);
+}
+.journey-path-label {
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+}
+.journey-path-heading { font-weight: 800; font-size: clamp(28px, 8vw, 44px); line-height: 1.05; letter-spacing: -0.03em; margin: 12px 0 0; max-width: 18ch; text-wrap: balance; }
+
+.journey-path-list {
+  position: relative;
+  display: grid;
+  gap: 22px;
+  margin: 36px 0 0;
+  padding: 0 0 0 34px;
+  list-style: none;
+}
+.journey-path-step { position: relative; display: flex; flex-direction: column; }
+
+.journey-path-dot {
+  position: absolute;
+  left: -34px;
+  top: 18px;
+  width: var(--sz, 12px);
+  height: var(--sz, 12px);
+  margin-left: calc(6px - var(--sz, 12px) / 2);
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 0 5px color-mix(in oklab, var(--accent) 12%, transparent);
+}
+.journey-path-step:nth-child(1) { --sz: 10px; }
+.journey-path-step:nth-child(2) { --sz: 13px; }
+.journey-path-step:nth-child(3) { --sz: 16px; }
+.journey-path-step:nth-child(4) { --sz: 18px; }
+.journey-path-hero { --sz: 22px; }
+
+/* the line: one segment per step, from this dot to the next */
+.journey-path-step:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: -29px;
+  top: 26px;
+  width: 2px;
+  height: calc(100% + 22px);
+  background: linear-gradient(var(--accent), var(--accent-2));
+  transform-origin: top;
+  opacity: 0.65;
+}
+
+.journey-path-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px 20px 18px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: color-mix(in oklab, var(--ink) 3%, var(--bg));
+}
+.journey-path-kicker { font-family: var(--font-mono, ui-monospace, Menlo, monospace); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.journey-path-title { font-weight: 800; font-size: 1.35rem; letter-spacing: -0.02em; line-height: 1.15; color: var(--ink); }
+.journey-path-line { color: var(--ink-2); line-height: 1.5; }
+
+.journey-path-hero .journey-path-dot {
+  background: var(--jp-hero);
+  border-color: var(--jp-hero);
+  box-shadow: 0 0 0 6px color-mix(in oklab, var(--jp-hero) 20%, transparent), 0 0 30px color-mix(in oklab, var(--jp-hero) 55%, transparent);
+}
+.journey-path-hero .journey-path-card {
+  border-color: color-mix(in oklab, var(--jp-hero) 55%, transparent);
+  background: linear-gradient(160deg, color-mix(in oklab, var(--jp-hero) 22%, var(--bg)), color-mix(in oklab, var(--jp-hero) 5%, var(--bg)) 60%);
+  box-shadow: 0 40px 120px -50px color-mix(in oklab, var(--jp-hero) 70%, transparent);
+  padding: 26px 22px 22px;
+}
+.journey-path-hero .journey-path-kicker { color: var(--ink-2); }
+.journey-path-hero .journey-path-title { font-size: 2rem; }
+
+/* ---------- running state (kit adds .in on the list) ---------- */
+html.js:not(.rm) .journey-path-card { opacity: 0; transform: translateY(28px); transition: opacity 0.6s var(--ls-ease) calc(var(--i) * 160ms + 150ms), transform 0.7s var(--ls-ease) calc(var(--i) * 160ms + 150ms); }
+html.js:not(.rm) .journey-path-hero .journey-path-card { transform: translateY(40px) scale(0.92); transition: opacity 0.5s var(--ls-ease) 680ms, transform 0.7s var(--ls-spring) 680ms; }
+html.js:not(.rm) .journey-path-dot { transform: scale(0); transition: transform 0.5s var(--ls-spring) calc(var(--i) * 160ms + 100ms); }
+html.js:not(.rm) .journey-path-step::before { transform: scaleY(0); transition: transform 0.45s var(--ls-ease) calc(var(--i) * 160ms + 220ms); }
+html.js:not(.rm) .journey-path-list.in .journey-path-card,
+html.js:not(.rm) .journey-path-list.in .journey-path-dot,
+html.js:not(.rm) .journey-path-list.in .journey-path-step::before { opacity: 1; transform: none; }
+html.js:not(.rm):not(.mo) .journey-path-card,
+html.js:not(.rm):not(.mo) .journey-path-dot,
+html.js:not(.rm):not(.mo) .journey-path-step::before { animation: ls-failsafe 0s var(--ls-failsafe) forwards; }
+html.js:not(.rm) .journey-path-list.in .journey-path-step::before { opacity: 0.65; }
+@keyframes ls-failsafe-line { to { opacity: 0.65; transform: none; } }
+html.js:not(.rm):not(.mo) .journey-path-step::before { animation-name: ls-failsafe-line; }
+
+html.rm .journey-path-card, html.rm .journey-path-dot, html.rm .journey-path-step::before { transition: none !important; animation: none !important; }
+
+/* ---------- desktop: steps side by side on a horizontal line ---------- */
+@media (min-width: 761px) {
+  .journey-path { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding-block: 72px; }
+  .journey-path-list { grid-template-columns: repeat(calc(var(--n) - 1), minmax(0, 1fr)) minmax(0, 1.3fr); gap: 20px; padding: 54px 0 0; margin-top: 44px; align-items: stretch; }
+  .journey-path-step { justify-content: flex-end; }
+  .journey-path-dot { left: 2px; top: -54px; margin-left: calc(11px - var(--sz) / 2); margin-top: calc(11px - var(--sz) / 2); }
+  .journey-path-step:not(:last-child)::before { left: 13px; top: -44px; width: calc(100% + 20px); height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transform-origin: left; }
+  html.js:not(.rm) .journey-path-step::before { transform: scaleX(0); }
+  .journey-path-step:nth-child(1) .journey-path-card { min-height: 250px; }
+  .journey-path-step:nth-child(2) .journey-path-card { min-height: 290px; }
+  .journey-path-step:nth-child(3) .journey-path-card { min-height: 330px; }
+  .journey-path-step:nth-child(4) .journey-path-card { min-height: 360px; }
+  .journey-path-hero .journey-path-card { min-height: 400px; padding: 32px 28px 28px; }
+  .journey-path-hero .journey-path-title { font-size: clamp(2.2rem, 3vw, 3rem); }
+  .journey-path-card { padding: 24px 22px 22px; }
+  .journey-path-heading { font-size: clamp(36px, 4vw, 56px); }
+}

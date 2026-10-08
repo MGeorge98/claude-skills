@@ -1,0 +1,102 @@
+/* drop-dock: items thrown into a container from off-screen corners (WAAPI, driven by DropDock.tsx).
+   Base rules are the final state: every item docked, the counter at its total, the container snapped.
+   Hidden state: items at opacity 0 until the throw starts, gated html.js:not(.rm), with the ls-failsafe
+   animation while the engine is absent. Snap glow and border are pseudo-elements faded with opacity. */
+
+.drop-dock {
+  position: relative;
+  box-sizing: border-box;
+  padding: clamp(56px, 10vh, 120px) max(var(--gut, 16px), calc((100% - 1240px) / 2));
+  color: var(--ink);
+}
+.drop-dock-head { max-width: 760px; }
+.drop-dock-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+}
+.drop-dock-h { font-weight: 800; font-size: clamp(32px, 8.4vw, 44px); line-height: 1.04; letter-spacing: -0.035em; margin: 12px 0 0; text-wrap: balance; }
+.drop-dock-lead { font-size: 1.05rem; line-height: 1.55; color: var(--ink-2); max-width: 46ch; margin: 14px 0 0; }
+
+.drop-dock-box {
+  position: relative;
+  isolation: isolate;
+  margin-top: 24px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: color-mix(in oklab, var(--accent) 5%, transparent);
+}
+/* snapped look: accent border and glow, faded in with opacity only */
+.drop-dock-box::before,
+.drop-dock-box::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  transition: opacity 0.6s var(--ls-ease);
+}
+.drop-dock-box::before { z-index: 1; border: 1px solid color-mix(in oklab, var(--accent) 55%, transparent); }
+.drop-dock-box::after { z-index: -1; box-shadow: 0 30px 90px -40px color-mix(in oklab, var(--accent) 60%, transparent); }
+
+.drop-dock-top { position: relative; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 4px 6px 14px; }
+.drop-dock-label { font-weight: 800; font-size: 1.15rem; letter-spacing: -0.02em; }
+.drop-dock-meta,
+.drop-dock-ctr { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.drop-dock-ctr { margin-left: auto; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.drop-dock-list { position: relative; z-index: 2; display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.drop-dock-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 64px;
+  box-sizing: border-box;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--bg);
+}
+.drop-dock-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in oklab, var(--accent) 45%, transparent);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+.drop-dock-mark svg { width: 22px; height: 22px; }
+.drop-dock-txt { display: grid; gap: 4px; min-width: 0; }
+.drop-dock-name { font-weight: 800; font-size: 1.06rem; letter-spacing: -0.015em; line-height: 1.2; }
+.drop-dock-note { font-size: 0.9rem; line-height: 1.45; color: var(--ink-2); }
+.drop-dock-after { margin-top: 20px; }
+
+/* ---------- running state (JS present, motion allowed) ---------- */
+html.js:not(.rm) .drop-dock:not(.drop-dock-go) .drop-dock-item { opacity: 0; }
+html.js:not(.rm) .drop-dock-box:not(.snap)::before,
+html.js:not(.rm) .drop-dock-box:not(.snap)::after { opacity: 0; }
+/* the engine never mounted: everything docks at the boot deadline */
+html.js:not(.rm):not(.mo) .drop-dock-item,
+html.js:not(.rm):not(.mo) .drop-dock-box::before,
+html.js:not(.rm):not(.mo) .drop-dock-box::after { animation: ls-failsafe 0s var(--ls-failsafe) forwards; }
+html.rm .drop-dock-item { opacity: 1 !important; transform: none !important; }
+
+/* ---------- desktop ---------- */
+@media (min-width: 820px) {
+  .drop-dock-h { font-size: clamp(44px, 4.6vw, 64px); }
+  .drop-dock-lead { font-size: 1.2rem; }
+  .drop-dock-box { margin-top: 32px; padding: 20px; }
+  .drop-dock-list { grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 14px; }
+  .drop-dock-card { flex-direction: column; align-items: flex-start; gap: 16px; min-height: 180px; padding: 22px; transition: transform var(--ls-t-ui) var(--ls-spring); }
+  .drop-dock-done .drop-dock-card:hover { transform: translateY(-4px); }
+}

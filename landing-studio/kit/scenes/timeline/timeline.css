@@ -1,0 +1,113 @@
+/* timeline: spine with entries. Every <li data-rv> gets .in from the kit observer when it scrolls into view.
+   The entry itself stays opaque; the hidden state sits on its children, so the spine segments (children of the
+   previous entry) never hide. Segment k grows when entry k+1 has .in (:has). Ladder inside an entry: dot, date,
+   title, text, 80ms apart from --tl-base. Base state is the final state. */
+
+.timeline {
+  --tl-gap: 40px;
+  --tl-dot: 14px;
+  --tl-top: 5px;
+  box-sizing: border-box;
+  padding: clamp(56px, 10vh, 120px) max(20px, 7vw);
+  color: var(--ink);
+  max-width: 1100px;
+  margin-inline: auto;
+}
+.timeline-kicker {
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+}
+.timeline-heading { font-weight: 800; font-size: clamp(28px, 8vw, 44px); line-height: 1.05; letter-spacing: -0.03em; margin: 12px 0 0; max-width: 18ch; text-wrap: balance; }
+
+.timeline-list { display: grid; row-gap: var(--tl-gap); margin: 44px 0 0; padding: 0; list-style: none; }
+.timeline-entry { position: relative; padding-left: 36px; min-width: 0; }
+.timeline-body { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+
+/* spine: a static track under every segment, the fill grows on top of it */
+.timeline-entry:not(:last-child)::after,
+.timeline-seg {
+  position: absolute;
+  left: calc(var(--tl-dot) / 2 - 1px);
+  top: calc(var(--tl-top) + var(--tl-dot) / 2);
+  width: 2px;
+  height: calc(100% + var(--tl-gap));
+}
+.timeline-entry:not(:last-child)::after { content: ""; background: var(--line); }
+.timeline-seg { background: linear-gradient(var(--accent), var(--accent-2)); transform-origin: top; z-index: 1; }
+
+.timeline-dot {
+  position: absolute;
+  left: 0;
+  top: var(--tl-top);
+  z-index: 2;
+  box-sizing: border-box;
+  width: var(--tl-dot);
+  height: var(--tl-dot);
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 0 5px var(--bg);
+}
+
+.timeline-date { font-family: var(--font-mono, ui-monospace, Menlo, monospace); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); line-height: 1.4; }
+.timeline-title { font-weight: 800; font-size: 1.35rem; letter-spacing: -0.02em; line-height: 1.15; color: var(--ink); }
+.timeline-text { display: flex; flex-direction: column; gap: 6px; }
+.timeline-line { margin: 0; color: var(--ink-2); line-height: 1.5; }
+.timeline-img { display: block; width: 100%; max-width: 420px; height: auto; margin-top: 10px; border-radius: 14px; border: 1px solid var(--line); }
+
+/* ---------- running state (kit adds .in on each entry) ---------- */
+html.js:not(.rm) .timeline-dot {
+  transform: scale(0.45);
+  background: var(--bg);
+  border-color: var(--line);
+  transition:
+    transform 0.55s var(--ls-spring) calc(var(--tl-base, 300ms) + var(--i) * var(--ls-stagger)),
+    background-color 0.35s var(--ls-ease) calc(var(--tl-base, 300ms) + var(--i) * var(--ls-stagger)),
+    border-color 0.35s var(--ls-ease) calc(var(--tl-base, 300ms) + var(--i) * var(--ls-stagger));
+}
+html.js:not(.rm) :is(.timeline-date, .timeline-title, .timeline-text) {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity var(--ls-t-fade) var(--ls-ease) calc(var(--tl-base, 300ms) + var(--i) * var(--ls-stagger)),
+    transform 0.7s var(--ls-ease) calc(var(--tl-base, 300ms) + var(--i) * var(--ls-stagger));
+}
+html.js:not(.rm) .timeline-seg { transform: scaleY(0); transition: transform 480ms var(--ls-inout); }
+html.js:not(.rm) .timeline-entry:first-child { --tl-base: 0ms; }
+
+html.js:not(.rm) .timeline-entry.in .timeline-dot { transform: none; background: var(--accent); border-color: var(--accent); }
+html.js:not(.rm) .timeline-entry.in :is(.timeline-date, .timeline-title, .timeline-text) { opacity: 1; transform: none; }
+html.js:not(.rm) .timeline-entry:has(+ .timeline-entry.in) > .timeline-seg { transform: none; }
+
+/* the kit's own hidden state is lifted: the entry is a plain, opaque box, the children carry the reveal */
+html.js:not(.rm) .timeline-entry[data-rv] { opacity: 1; transform: none; transition: none; }
+
+/* failsafe: no engine, everything final at the deadline */
+@keyframes timeline-failsafe-dot { to { transform: none; background: var(--accent); border-color: var(--accent); } }
+@keyframes timeline-failsafe-seg { to { transform: none; } }
+html.js:not(.rm):not(.mo) :is(.timeline-date, .timeline-title, .timeline-text) { animation: ls-failsafe 0s var(--ls-failsafe) forwards; }
+html.js:not(.rm):not(.mo) .timeline-dot { animation: timeline-failsafe-dot 0s var(--ls-failsafe) forwards; }
+html.js:not(.rm):not(.mo) .timeline-seg { animation: timeline-failsafe-seg 0s var(--ls-failsafe) forwards; }
+
+html.rm .timeline-dot, html.rm .timeline-seg, html.rm .timeline-date, html.rm .timeline-title, html.rm .timeline-text { transition: none !important; animation: none !important; }
+
+/* ---------- from 761px: centre spine, entries alternate ---------- */
+@media (min-width: 761px) {
+  .timeline { --tl-gap: 56px; padding-block: 96px; }
+  .timeline-heading { font-size: clamp(36px, 4vw, 56px); }
+  .timeline-title { font-size: 1.6rem; }
+  .timeline[data-side="alternate"] .timeline-entry { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding-left: 0; }
+  .timeline[data-side="alternate"] .timeline-entry:not(:last-child)::after,
+  .timeline[data-side="alternate"] .timeline-seg,
+  .timeline[data-side="alternate"] .timeline-dot { left: calc(50% - var(--tl-dot) / 2); }
+  .timeline[data-side="alternate"] .timeline-entry:not(:last-child)::after,
+  .timeline[data-side="alternate"] .timeline-seg { left: calc(50% - 1px); }
+  .timeline[data-side="alternate"] .timeline-l .timeline-body { grid-column: 1; padding-right: 48px; text-align: right; align-items: flex-end; }
+  .timeline[data-side="alternate"] .timeline-r .timeline-body { grid-column: 2; padding-left: 48px; }
+  .timeline[data-side="alternate"] .timeline-l .timeline-text { align-items: flex-end; }
+  .timeline[data-side="alternate"] .timeline-img { max-width: 100%; }
+}

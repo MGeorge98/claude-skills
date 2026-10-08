@@ -1,0 +1,60 @@
+/* pinned-beats: without the engine (no JS, html.rm, or before mount) the beats are a readable column.
+   With the engine mounted (html.mo) the section becomes a tall track with one pinned 100svh screen;
+   the engine writes opacity / transform / visibility per beat and per [data-sub] row. */
+
+.pinned-beats { --pb-gut: max(20px, 7vw); position: relative; padding: 72px var(--pb-gut); color: var(--ink); }
+.pinned-beats-stage { display: grid; gap: 64px; max-width: 1100px; margin-inline: auto; }
+.pinned-beats-bar { display: none; }
+
+.pinned-beats-t { font-weight: 800; font-size: clamp(32px, 9.4vw, 44px); line-height: 1.08; letter-spacing: -0.03em; max-width: 14ch; margin: 0; }
+.pinned-beats-dim { color: var(--muted); }
+.pinned-beats-acc {
+  background: linear-gradient(100deg, var(--accent), color-mix(in oklab, var(--accent) 80%, #000) 48%, var(--accent-2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.pinned-beats-num {
+  display: block; font-weight: 800; font-size: clamp(120px, 44vw, 300px); line-height: 0.9; letter-spacing: -0.06em;
+  color: transparent; -webkit-text-stroke: 1.5px color-mix(in oklab, var(--accent) 35%, transparent); margin-bottom: -0.12em;
+}
+.pinned-beats-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; font-weight: 700; font-size: clamp(28px, 8.4vw, 40px); line-height: 1.15; letter-spacing: -0.025em; }
+.pinned-beats-list li:nth-child(even) { color: var(--ink-2); }
+.pinned-beats-list li:last-child { color: var(--accent-2); }
+.pinned-beats-subt { margin: 20px 0 0; color: var(--muted); font-size: 1.1rem; line-height: 1.5; max-width: 40ch; }
+.pinned-beats-quote { margin: 0; }
+.pinned-beats-quote blockquote { margin: 0; font-weight: 800; font-size: clamp(30px, 8.8vw, 44px); line-height: 1.1; letter-spacing: -0.03em; max-width: 20ch; }
+.pinned-beats-quote blockquote::before { content: "\201C"; display: block; font-size: 2.4em; line-height: 0.6; color: var(--accent); margin-bottom: 0.1em; }
+.pinned-beats-quote .pinned-beats-acc { background: linear-gradient(110deg, var(--ink) 30%, color-mix(in oklab, var(--accent-2) 45%, var(--ink)) 72%); -webkit-background-clip: text; background-clip: text; }
+.pinned-beats-quote figcaption { margin-top: 22px; font-family: var(--font-mono, ui-monospace, Menlo, monospace); font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+/* ambient: the big number drifts (paused with html.paused, killed by html.rm) */
+html.js:not(.rm) .pinned-beats-num { animation: pinned-beats-drift 12s ease-in-out infinite alternate; }
+html.paused .pinned-beats-num { animation-play-state: paused; }
+@keyframes pinned-beats-drift { from { translate: 0 0; } to { translate: 18px -10px; } }
+
+/* ---------- engine mounted: tall track, pinned screen ---------- */
+html.mo:not(.rm) .pinned-beats { height: var(--len, 320vh); padding: 0; --p: 0; }
+html.mo:not(.rm) .pinned-beats-stage { position: sticky; top: 0; height: 100vh; height: 100svh; display: block; max-width: none; overflow: hidden; }
+html.mo:not(.rm) .pinned-beats-beat {
+  position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center;
+  padding: 0 var(--pb-gut); max-width: 1100px; margin-inline: auto; opacity: 0; visibility: hidden;
+}
+/* first beat visible from the first frame (window starts at 0): no dead frame before the engine's first write */
+html.mo:not(.rm) .pinned-beats-first { opacity: 1; visibility: visible; }
+html.mo:not(.rm) .pinned-beats-bar { display: block; position: absolute; left: var(--pb-gut); right: var(--pb-gut); top: max(22px, 4vh); height: 2px; background: var(--line); border-radius: 2px; overflow: hidden; z-index: 2; }
+/* the bar is a pure function of --p (an engine that writes [data-bar] directly writes the same value) */
+html.mo:not(.rm) .pinned-beats-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transform-origin: left; transform: scaleX(var(--p, 0)); }
+html.mo:not(.rm) .pinned-beats-list li { opacity: 0.08; }
+.pinned-beats.live .pinned-beats-beat, .pinned-beats.live .pinned-beats-list li { will-change: transform, opacity; }
+
+@media (min-width: 820px) {
+  html.mo:not(.rm) .pinned-beats { height: var(--len-d, var(--len, 380vh)); }
+  .pinned-beats-t { font-size: clamp(48px, 5.6vw, 88px); }
+  .pinned-beats-list { font-size: clamp(40px, 4.4vw, 64px); }
+  .pinned-beats-quote blockquote { font-size: clamp(44px, 4.8vw, 76px); }
+  .pinned-beats-num { font-size: clamp(220px, 26vw, 400px); }
+}
+/* short landscape phones: keep the tallest beat inside the frame */
+@media (max-height: 560px) and (min-width: 560px) {
+  .pinned-beats-t, .pinned-beats-list, .pinned-beats-quote blockquote { font-size: clamp(26px, 6vh, 40px); }
+  .pinned-beats-num { font-size: 34vh; }
+}

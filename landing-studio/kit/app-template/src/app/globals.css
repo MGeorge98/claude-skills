@@ -1,0 +1,84 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+@import "../styles/motion.css";
+
+/* Tailwind theme mapped onto the brand tokens, so utilities and scenes share one palette.
+   --font-sans / --font-mono live in tokens.css (unlayered :root beats Tailwind's theme layer). */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-line: var(--line);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip; /* clip, not hidden: hidden would break position: sticky on the stages */
+}
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+/* ---------- generic blocks ---------- */
+.wrap { padding-inline: var(--gut); max-width: 1240px; margin-inline: auto; box-sizing: content-box; }
+
+.kicker {
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.card {
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--ink) 2%, transparent);
+  border-radius: 1rem;
+}
+
+.field {
+  width: 100%;
+  font: inherit;
+  font-size: 16px; /* 16px inputs: iOS does not zoom */
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+  border: 1px solid var(--line);
+  border-radius: .75rem;
+  padding: .85rem 1rem;
+  outline: none;
+  transition: border-color var(--ls-t-ui) var(--ls-ease), box-shadow var(--ls-t-ui) var(--ls-ease);
+}
+.field::placeholder { color: var(--muted); }
+.field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+.field[aria-invalid="true"] { border-color: #f26d6d; }
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  min-height: 48px;
+  padding: .85rem 1.4rem;
+  border-radius: 999px;
+  font-weight: 700;
+  color: var(--bg);
+  background: var(--accent);
+  transition: background-color var(--ls-t-ui) var(--ls-ease), transform 90ms var(--ls-spring);
+}
+.btn-primary:hover { background: color-mix(in srgb, var(--accent) 82%, var(--ink)); }
+.btn-primary:active { transform: scale(.98); }
+.btn-primary:disabled { opacity: .6; cursor: default; }
+
+.ls-toggle {
+  align-items: center;
+  font: 600 .8125rem/1 var(--font-sans);
+  color: var(--muted);
+  padding: .6rem .9rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}

@@ -1,0 +1,80 @@
+/* horizontal-pinned: without the engine (no JS, html.rm, or before mount) the cards are a readable column
+   (a wrapped grid from 820px), nothing pinned, nothing overflowing. With the engine mounted (html.mo) the section
+   becomes a tall track with one pinned 100svh screen and the card row glides in X as a pure function of --p. */
+
+.horizontal-pinned { --hp-gut: max(16px, 6vw); position: relative; padding: 72px var(--hp-gut); color: var(--ink); }
+.horizontal-pinned-stage { display: grid; gap: 40px; max-width: 1240px; margin-inline: auto; }
+.horizontal-pinned-head { display: grid; gap: 18px; }
+.horizontal-pinned-headrow { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; }
+.horizontal-pinned-kicker {
+  margin: 0 0 12px; font-family: var(--font-mono); font-size: .75rem; line-height: 1.4;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--accent);
+}
+.horizontal-pinned-title { margin: 0; font-weight: 800; font-size: clamp(28px, 7.4vw, 40px); line-height: 1.08; letter-spacing: -0.03em; max-width: 18ch; }
+.horizontal-pinned-count { display: none; margin: 0; font-family: var(--font-mono); font-size: .9rem; line-height: 1; color: var(--ink-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.horizontal-pinned-bar { display: none; }
+
+.horizontal-pinned-track { display: grid; gap: 20px; margin: 0; padding: 0; list-style: none; }
+.horizontal-pinned-card {
+  box-sizing: border-box; padding: 18px; border: 1px solid var(--line); border-radius: 18px;
+  background: color-mix(in srgb, var(--ink) 3%, var(--bg));
+}
+.horizontal-pinned-img { display: block; width: 100%; height: auto; border-radius: 12px; margin-bottom: 16px; background: var(--line); }
+.horizontal-pinned-ck {
+  margin: 0 0 6px; font-family: var(--font-mono); font-size: .72rem; line-height: 1.4;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--accent);
+}
+.horizontal-pinned-ct { margin: 0 0 8px; font-weight: 750; font-size: 1.45rem; line-height: 1.15; letter-spacing: -0.02em; }
+.horizontal-pinned-cl { margin: 0; color: var(--ink-2); font-size: 1rem; line-height: 1.5; }
+
+/* ---------- engine mounted: tall track, pinned screen, the row glides in X ---------- */
+html.mo:not(.rm) .horizontal-pinned { height: var(--len, 460vh); padding: 0; --p: 0; }
+html.mo:not(.rm) .horizontal-pinned-stage {
+  position: sticky; top: 0; height: 100vh; height: 100svh; max-width: none; overflow: clip;
+  display: flex; flex-direction: column; justify-content: center; gap: clamp(20px, 4vh, 40px);
+}
+html.mo:not(.rm) .horizontal-pinned-head { padding-inline: var(--hp-gut); }
+html.mo:not(.rm) .horizontal-pinned-count { display: inline-flex; align-items: center; gap: .6ch; }
+/* the counter is a column of digits in a one-line window, rolled by round(p x (N - 1)) */
+.horizontal-pinned-roll { display: inline-block; height: 1em; overflow: clip; vertical-align: top; }
+.horizontal-pinned-digits { display: flex; flex-direction: column; text-align: right; }
+.horizontal-pinned-digits span { display: block; height: 1em; line-height: 1; }
+html.mo:not(.rm) .horizontal-pinned-digits {
+  transform: translateY(calc(round(nearest, var(--p) * (var(--n, 1) - 1), 1) * -1em));
+  transition: transform var(--ls-t-ui) var(--ls-ease);
+}
+html.mo:not(.rm) .horizontal-pinned-bar { display: block; height: 2px; background: var(--line); border-radius: 2px; overflow: hidden; }
+/* the bar is a pure function of --p; the engine's [data-bar] handler writes the same value inline */
+html.mo:not(.rm) .horizontal-pinned-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transform-origin: left; transform: scaleX(var(--p, 0)); }
+
+/* the rail is the size container (100cqw) and clips the row in X only, so card scale never clips in Y */
+html.mo:not(.rm) .horizontal-pinned-rail { container-type: inline-size; overflow-x: clip; }
+html.mo:not(.rm) .horizontal-pinned-track {
+  display: flex; align-items: stretch; width: max-content; padding-inline: var(--hp-gut); box-sizing: border-box;
+  /* 100% = the track's own width (padding included), 100cqw = the rail: p=0 card 1 at the left gutter,
+     p=1 the last card at the right gutter */
+  transform: translate3d(calc((100cqw - 100%) * var(--p)), 0, 0);
+}
+html.mo:not(.rm) .horizontal-pinned-card {
+  flex: 0 0 72vw; width: 72vw;
+  /* focus: 1 when p puts this card's index at the centre of the run, falling to 0 one card away */
+  --hp-d: calc(var(--p) * (var(--n, 1) - 1) - var(--i, 0));
+  --hp-f: clamp(0, calc(1 - max(var(--hp-d), -1 * var(--hp-d))), 1);
+  transform: scale(calc(.97 + .03 * var(--hp-f)));
+  opacity: calc(.8 + .2 * var(--hp-f));
+}
+.horizontal-pinned.live .horizontal-pinned-track,
+.horizontal-pinned.live .horizontal-pinned-card { will-change: transform, opacity; }
+
+@media (min-width: 820px) {
+  html.mo:not(.rm) .horizontal-pinned { height: var(--len-d, var(--len, 400vh)); }
+  .horizontal-pinned-title { font-size: clamp(40px, 4vw, 64px); }
+  .horizontal-pinned-track { grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+  html.mo:not(.rm) .horizontal-pinned-card { flex-basis: min(420px, 30vw); width: min(420px, 30vw); }
+  .horizontal-pinned-count { font-size: 1rem; }
+}
+/* short landscape phones: shrink the image so the card fits the frame */
+@media (max-height: 560px) and (min-width: 560px) {
+  html.mo:not(.rm) .horizontal-pinned-img { width: auto; max-width: 100%; height: 22vh; }
+  html.mo:not(.rm) .horizontal-pinned-title { font-size: clamp(24px, 6vh, 36px); }
+}

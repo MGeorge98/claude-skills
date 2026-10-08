@@ -1,0 +1,44 @@
+/* number-wall: a grid of count-up figures. Base = final state. Reveal states are the kit's own
+   (tile [data-rv], number [data-count]); this file adds layout, type and the accent gradient only. */
+
+.number-wall { --nw-gut: max(20px, 7vw); position: relative; padding: 72px max(var(--nw-gut), calc((100% - 1100px) / 2)); color: var(--ink); }
+.number-wall-head { margin: 0 0 32px; max-width: 720px; }
+.number-wall-kicker { font-family: var(--font-mono, ui-monospace, Menlo, monospace); font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 0; }
+.number-wall-h { font-weight: 800; font-size: clamp(28px, 7.4vw, 44px); line-height: 1.08; letter-spacing: -0.03em; margin: 12px 0 0; text-wrap: balance; }
+
+.number-wall-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.number-wall-tile {
+  container-type: inline-size;
+  min-width: 0;
+  padding: 18px 16px 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  display: flex; flex-direction: column; justify-content: flex-start; gap: 8px;
+}
+/* odd count on mobile: the first tile spans the row */
+.number-wall[data-n="3"] .number-wall-tile:first-child,
+.number-wall[data-n="5"] .number-wall-tile:first-child { grid-column: 1 / -1; }
+
+.number-wall-num {
+  display: block; white-space: nowrap;
+  font-weight: 800; font-size: clamp(28px, 22cqi, 76px); line-height: 1.02; letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  padding-bottom: 0.08em;
+  background: linear-gradient(100deg, var(--accent), color-mix(in oklab, var(--accent) 80%, #000) 48%, var(--accent-2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.number-wall-cap { margin: 0; font-size: 1rem; line-height: 1.4; color: var(--ink-2); text-wrap: pretty; }
+.number-wall-note { margin: auto 0 0; padding-top: 6px; font-family: var(--font-mono, ui-monospace, Menlo, monospace); font-size: 0.75rem; line-height: 1.4; color: var(--muted); }
+
+/* the count pops in on its own reveal; the tile ladder (--i) carries the stagger */
+html.js:not(.rm) .number-wall-num[data-count] { transition: opacity var(--ls-t-fade) var(--ls-ease) calc(var(--i, 0) * var(--ls-stagger)); }
+
+@media (min-width: 761px) {
+  .number-wall { padding-block: 104px; }
+  .number-wall-grid { gap: 20px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .number-wall-tile { padding: 28px 26px 24px; border-radius: 20px; }
+  .number-wall[data-n="3"] .number-wall-tile:first-child,
+  .number-wall[data-n="5"] .number-wall-tile:first-child { grid-column: auto; }
+  .number-wall[data-n="4"] .number-wall-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .number-wall-head { margin-bottom: 48px; }
+}

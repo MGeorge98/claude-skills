@@ -1,0 +1,122 @@
+/* portrait-hero: portrait-led hero. Base = finished section (no JS, html.rm, ls-static).
+   Hidden states come from the kit's [data-rv] rules under html.js:not(.rm) and carry the kit failsafe.
+   Total entrance stays under 1.4 s. Classes prefixed .portrait-hero-. */
+
+.portrait-hero {
+  --ph-gut: max(20px, 7vw);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  row-gap: 28px;
+  box-sizing: border-box;
+  padding: 24px max(var(--ph-gut), calc((100% - 1240px) / 2)) 48px;
+  color: var(--ink);
+}
+
+.portrait-hero-media { min-width: 0; }
+.portrait-hero-card {
+  margin: 0;
+  width: min(100%, 420px);
+  margin-inline: auto;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: color-mix(in oklab, var(--ink) 6%, var(--bg));
+  box-shadow: 0 30px 60px -28px color-mix(in oklab, var(--bg) 20%, #000);
+}
+.portrait-hero-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: min(52svh, 440px);
+  object-fit: cover;
+  object-position: 50% 22%;
+  border-radius: 12px;
+}
+
+.portrait-hero-text { min-width: 0; align-self: center; }
+.portrait-hero-label {
+  margin: 0;
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.portrait-hero-name {
+  margin: 12px 0 0;
+  font-family: var(--font-sans, inherit);
+  font-weight: 800;
+  font-size: clamp(40px, 12vw, 56px);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+.portrait-hero-role {
+  margin: 12px 0 0;
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+}
+.portrait-hero-bio {
+  list-style: none;
+  margin: 22px 0 0;
+  padding: 0 0 0 16px;
+  max-width: 40ch;
+  border-left: 2px solid var(--accent);
+}
+.portrait-hero-line { margin: 0; padding: 8px 0; font-size: 1rem; line-height: 1.5; color: var(--ink-2); }
+.portrait-hero-links { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.portrait-hero-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color var(--ls-t-ui) var(--ls-ease), background-color var(--ls-t-ui) var(--ls-ease);
+}
+.portrait-hero-link:hover { border-color: var(--accent); background: color-mix(in oklab, var(--accent) 8%, transparent); }
+
+/* ---------- reveal (kit [data-rv] supplies hidden state, transition and failsafe) ---------- */
+html.js:not(.rm) .portrait-hero-card[data-rv="clip"] {
+  transform: scale(0.94);
+  transition:
+    clip-path 0.95s var(--ls-ease),
+    transform 0.95s var(--ls-ease);
+}
+html.js:not(.rm) .portrait-hero-card[data-rv="clip"].in { transform: none; }
+html.js:not(.rm) .portrait-hero-line[data-rv],
+html.js:not(.rm) .portrait-hero-links[data-rv] {
+  transition:
+    opacity 0.5s var(--ls-ease) var(--d),
+    transform 0.7s var(--ls-ease) var(--d);
+}
+html.js:not(.rm) .portrait-hero-label[data-rv] { transition-duration: 0.5s, 0.7s; }
+
+/* ---------- desktop ---------- */
+@media (min-width: 820px) {
+  .portrait-hero {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    column-gap: clamp(40px, 6vw, 96px);
+    align-items: center;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding-block: 48px;
+  }
+  .portrait-hero-flip { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); }
+  .portrait-hero-flip .portrait-hero-media { order: 2; }
+  .portrait-hero-flip .portrait-hero-text { order: 1; }
+  .portrait-hero-card { width: min(100%, 520px); }
+  .portrait-hero-img { max-height: min(74svh, 700px); }
+  .portrait-hero-name { font-size: clamp(64px, 6.4vw, 104px); }
+  .portrait-hero-role { font-size: 0.9rem; }
+  .portrait-hero-line { font-size: 1.1rem; }
+}

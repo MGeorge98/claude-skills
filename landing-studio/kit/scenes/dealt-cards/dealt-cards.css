@@ -1,0 +1,103 @@
+/* dealt-cards: without the engine (no JS, html.rm, or before mount) the heading and the cards are a readable
+   column, each card at its resting tilt. With the engine mounted (html.mo) the section becomes a tall track with
+   one pinned 100svh screen; the built-in deal handler writes transform and opacity on [data-deal] cards and on
+   the [data-deal-sh] shadow. */
+
+.dealt-cards { --dc-gut: var(--gut, max(16px, 6vw)); --dc-w: min(78vw, 360px); position: relative; padding: 72px var(--dc-gut) 40px; color: var(--ink); }
+.dealt-cards-stage { max-width: 1240px; margin-inline: auto; }
+
+.dealt-cards-kicker, .dealt-cards-ck, .dealt-cards-c {
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace); letter-spacing: 0.14em; text-transform: uppercase; line-height: 1.2;
+}
+.dealt-cards-kicker { margin: 0; font-size: 0.75rem; color: var(--accent); }
+.dealt-cards-h { margin: 10px 0 0; font-weight: 800; font-size: clamp(30px, 8.4vw, 48px); line-height: 1.08; letter-spacing: -0.03em; max-width: 14ch; }
+.dealt-cards-acc {
+  background: linear-gradient(100deg, var(--accent), color-mix(in oklab, var(--accent) 80%, #000) 48%, var(--accent-2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+.dealt-cards-table { position: relative; margin-top: 32px; }
+.dealt-cards-sh, .dealt-cards-slot { display: none; }
+.dealt-cards-stack { display: grid; gap: 22px; justify-items: center; margin: 0; padding: 0; list-style: none; }
+
+.dealt-cards-card {
+  position: relative; box-sizing: border-box; width: var(--dc-w); aspect-ratio: 5 / 7; border-radius: 20px;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(120% 70% at 20% 0%, color-mix(in oklab, var(--accent) 16%, transparent), transparent 60%),
+    linear-gradient(170deg, color-mix(in oklab, var(--bg) 90%, var(--accent)), var(--bg));
+  box-shadow: 0 24px 60px -24px color-mix(in oklab, #000 80%, transparent), inset 0 1px 0 color-mix(in oklab, var(--ink) 5%, transparent);
+  color: var(--ink); transform: rotate(var(--r, 0deg));
+}
+.dealt-cards-card::before { content: ""; position: absolute; inset: 8px; border-radius: 14px; border: 1px solid color-mix(in oklab, var(--accent) 16%, transparent); pointer-events: none; }
+.dealt-cards-c { position: absolute; font-size: 0.8rem; letter-spacing: 0.06em; color: var(--accent-2); }
+.dealt-cards-tl { left: 20px; top: 20px; }
+.dealt-cards-br { right: 20px; bottom: 20px; transform: rotate(180deg); }
+.dealt-cards-face {
+  position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center;
+  text-align: center; gap: 10px; padding: 52px 26px;
+}
+.dealt-cards-ck { margin: 0; font-size: 0.72rem; color: var(--accent); }
+.dealt-cards-t { margin: 2px 0 4px; font-weight: 700; font-size: clamp(22px, 6vw, 26px); line-height: 1.15; letter-spacing: -0.02em; text-wrap: balance; }
+.dealt-cards-hl { color: var(--accent-2); }
+.dealt-cards-d { margin: 0; color: var(--ink-2); font-size: 0.98rem; line-height: 1.5; text-wrap: pretty; }
+
+/* ---------- engine mounted: tall track, pinned screen ---------- */
+html.mo:not(.rm) .dealt-cards { height: var(--len, 253vh); padding: 0; --p: 0; }
+html.mo:not(.rm) .dealt-cards-stage {
+  position: sticky; top: 0; height: 100vh; height: 100svh; display: flex; flex-direction: column; box-sizing: border-box;
+  padding: max(48px, 6vh) var(--dc-gut) 24px; max-width: none; overflow: hidden;
+}
+html.mo:not(.rm) .dealt-cards-table { flex: 1; min-height: 0; margin-top: 20px; display: grid; place-items: center; contain: layout style; }
+html.mo:not(.rm) .dealt-cards-stack { display: block; position: relative; width: var(--dc-w); aspect-ratio: 5 / 7; max-height: 100%; }
+/* the p = 0 state the engine also writes (mobile drop .4vh); cards are authored at final size, never above scale 1 */
+html.mo:not(.rm) .dealt-cards-card {
+  position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; backface-visibility: hidden;
+  transform: translate3d(22vw, 40vh, 0) rotate(18deg) scale(0.9);
+}
+/* first frame: an outlined slot where the pile will land, so the stage at p = 0 shows heading + table, never
+   an empty screen. It fades out as the first card covers it (pure function of --p). */
+html.mo:not(.rm) .dealt-cards-slot {
+  display: block; position: absolute; top: 50%; left: 50%; width: var(--dc-w); aspect-ratio: 5 / 7; max-height: 100%;
+  translate: -50% -50%; box-sizing: border-box; border-radius: 20px; border: 1.5px dashed color-mix(in oklab, var(--accent) 45%, transparent);
+  background: color-mix(in oklab, var(--accent) 4%, transparent);
+  opacity: clamp(0, calc((0.3 - var(--p, 0)) / 0.12), 1);
+}
+html.mo:not(.rm) .dealt-cards-sh {
+  display: block; position: absolute; left: 50%; top: 50%; width: min(90vw, 440px); height: 120px;
+  translate: -50% 150px; border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in oklab, #000 75%, transparent), transparent);
+  opacity: 0; transform: scale(0.7);
+}
+.dealt-cards.live .dealt-cards-card, .dealt-cards.live .dealt-cards-sh { will-change: transform, opacity; }
+
+@media (min-width: 820px) {
+  .dealt-cards { --dc-w: 300px; }
+  .dealt-cards-h { font-size: clamp(44px, 4.6vw, 72px); }
+  .dealt-cards-table { margin-top: 48px; }
+  .dealt-cards-stack { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .dealt-cards-card:nth-child(2) { margin-top: 40px; }
+  .dealt-cards-t { font-size: 22px; }
+  .dealt-cards-d { font-size: 0.92rem; }
+
+  html.mo:not(.rm) .dealt-cards { --dc-w: 360px; height: var(--len-d, var(--len, 276vh)); }
+  html.mo:not(.rm) .dealt-cards-stage {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 48px;
+    padding: 0 max(var(--dc-gut), calc((100vw - 1240px) / 2));
+  }
+  html.mo:not(.rm) .dealt-cards-table { height: 100%; margin-top: 0; }
+  html.mo:not(.rm) .dealt-cards-stack { max-height: calc(100svh - 120px); }
+  html.mo:not(.rm) .dealt-cards-card { margin: 0; transform: translate3d(22vw, 60vh, 0) rotate(18deg) scale(0.9); }
+  html.mo:not(.rm) .dealt-cards-slot { max-height: calc(100svh - 120px); }
+  html.mo:not(.rm) .dealt-cards-t { font-size: 26px; }
+  html.mo:not(.rm) .dealt-cards-d { font-size: 1rem; }
+  html.mo:not(.rm) .dealt-cards-sh { translate: -50% 220px; }
+}
+
+/* short landscape phones: the card shrinks with the frame */
+@media (max-height: 560px) and (min-width: 560px) and (max-width: 819px) {
+  html.mo:not(.rm) .dealt-cards-stage { display: grid; grid-template-columns: 1fr 1fr; align-items: center; padding-block: 16px; }
+  html.mo:not(.rm) .dealt-cards { --dc-w: min(40vw, calc((100svh - 40px) * 5 / 7)); }
+  html.mo:not(.rm) .dealt-cards-t { font-size: 18px; }
+  html.mo:not(.rm) .dealt-cards-d { font-size: 0.8rem; }
+}

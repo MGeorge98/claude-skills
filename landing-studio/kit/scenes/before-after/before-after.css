@@ -1,0 +1,133 @@
+/* before-after: compare slider. Base = final state at --ba-start. Running state (--x travels 100% to start on reveal)
+   is gated html.js:not(.rm). @property registers --x so it animates; where unsupported it sits at the start value. */
+
+@property --x { syntax: "<percentage>"; inherits: true; initial-value: 50%; }
+
+.before-after {
+  padding: clamp(48px, 9vh, 96px) max(max(20px, 7vw), calc((100% - 1100px) / 2));
+  box-sizing: border-box;
+  color: var(--ink);
+}
+.before-after-head { margin-bottom: clamp(20px, 3.5vh, 36px); }
+.before-after-kicker {
+  margin: 0 0 12px;
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.before-after-h {
+  margin: 0;
+  max-width: 18ch;
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-weight: 800;
+  font-size: clamp(32px, 8.6vw, 44px);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.before-after-fig { margin: 0; }
+
+.before-after-frame {
+  --x: var(--ba-start, 50%);
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  touch-action: pan-y;
+}
+.before-after-img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; user-select: none; -webkit-user-drag: none; }
+.before-after-after { clip-path: inset(0 0 0 var(--x)); }
+
+.before-after-tag {
+  position: absolute;
+  top: 10px;
+  padding: 5px 9px;
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--bg) 82%, transparent);
+  border: 1px solid var(--line);
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  color: var(--ink);
+  pointer-events: none;
+}
+.before-after-tag-l { left: 10px; }
+.before-after-tag-r { right: 10px; }
+
+/* handle: a full-width box moved by translateX(--x), so only a transform runs while --x changes */
+.before-after-handle { position: absolute; inset: 0; pointer-events: none; transform: translateX(var(--x)); }
+.before-after-line { position: absolute; top: 0; bottom: 0; left: -1px; width: 2px; background: var(--ink); }
+.before-after-knob {
+  position: absolute;
+  top: 50%;
+  left: -22px;
+  width: 44px;
+  height: 44px;
+  margin-top: -22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--ink);
+  color: var(--ink);
+}
+
+/* native range: transparent, full width, a 44px band centred on the knob; zero-width thumb keeps value and --x aligned */
+.before-after-range {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  z-index: 2;
+  width: 100%;
+  height: 44px;
+  margin: -22px 0 0;
+  padding: 0;
+  background: transparent;
+  opacity: 0.011;
+  cursor: ew-resize;
+  appearance: none;
+  -webkit-appearance: none;
+  touch-action: pan-y;
+}
+.before-after-range::-webkit-slider-runnable-track { height: 44px; background: transparent; border: 0; }
+.before-after-range::-moz-range-track { height: 44px; background: transparent; border: 0; }
+.before-after-range::-webkit-slider-thumb { -webkit-appearance: none; width: 0; height: 44px; border: 0; background: transparent; }
+.before-after-range::-moz-range-thumb { width: 0; height: 44px; border: 0; background: transparent; }
+.before-after-range:focus-visible { outline: none; opacity: 0.011; }
+.before-after-frame:has(.before-after-range:focus-visible) .before-after-knob { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.before-after-cap {
+  margin-top: 12px;
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  color: var(--ink-2);
+}
+
+/* ---- running state: --x starts at 100% and travels to the start value on .in ---- */
+html.js:not(.rm) .before-after-frame:not(.in) { --x: 100%; }
+html.js:not(.rm) .before-after-frame.in { --x: var(--ba-start, 50%); }
+html.js:not(.rm) .before-after-frame { transition: --x var(--ls-t-reveal) var(--ls-ease); }
+/* once the visitor drags, the value must follow the thumb with no lag */
+html.js:not(.rm) .before-after-frame[data-moved] { transition: none; }
+/* failsafe: no engine, --x settles on its own at the deadline */
+html.js:not(.rm):not(.mo) .before-after-frame:not([data-moved]) { animation: before-after-open 0s var(--ls-failsafe) forwards; }
+@keyframes before-after-open { to { --x: var(--ba-start, 50%); } }
+html.rm .before-after-frame { transition: none !important; animation: none !important; --x: var(--ba-start, 50%); }
+
+@media (max-width: 760px) {
+  .before-after-tag { top: 8px; font-size: 0.625rem; padding: 4px 7px; }
+  .before-after-tag-l { left: 8px; }
+  .before-after-tag-r { right: 8px; }
+}
+@media (min-width: 761px) {
+  .before-after-h { font-size: clamp(40px, 4.4vw, 64px); }
+  .before-after-tag { font-size: 0.75rem; }
+}

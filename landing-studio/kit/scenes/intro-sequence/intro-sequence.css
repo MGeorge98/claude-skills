@@ -1,0 +1,118 @@
+/* intro-sequence: a fixed overlay over the first scene. Timeline as fractions of --intro-sequence-d (default 1600ms):
+   0.04-0.49 logo stroke draws, 0.40-0.60 its fill fades in; 0.30+ wordmark words rise out of masks (70ms apart);
+   0.45-0.75 label; 0.70-0.88 contents leave upward; 0.72-1.00 the curtain lifts and ends visibility hidden.
+   The overlay exists only under html.js:not(.rm):not(.paused). No JS, reduced motion, Pause motion and ls-static:
+   no overlay at all. Failsafe: hidden at --ls-failsafe whatever the script does. */
+
+.intro-sequence { display: none; }
+
+html.js:not(.rm):not(.paused) .intro-sequence:not(.intro-sequence-gone) {
+  --intro-sequence-lift: calc(var(--intro-sequence-d, 1600ms) * 0.28);
+  display: grid;
+  place-items: center;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  box-sizing: border-box;
+  padding: 0 var(--gut, 16px);
+  background: var(--bg);
+  color: var(--ink);
+  pointer-events: auto;
+  animation:
+    intro-sequence-lift var(--intro-sequence-lift) var(--ls-inout) calc(var(--intro-sequence-d, 1600ms) * 0.72) forwards,
+    intro-sequence-failsafe 0s linear var(--ls-failsafe) forwards;
+}
+/* the curtain's lower edge, one accent hairline that travels up with it */
+.intro-sequence::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--accent);
+  transform-origin: left center;
+}
+
+.intro-sequence-in {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  max-width: min(100%, 880px);
+  text-align: center;
+}
+.intro-sequence-logo { width: 56px; height: 56px; }
+.intro-sequence-logo svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.intro-sequence-logo :is(path, line, polyline, circle, rect) {
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.intro-sequence-fill { fill: color-mix(in oklab, var(--accent) 18%, transparent); stroke: none !important; }
+.intro-sequence-stroke { fill: none; }
+.intro-sequence-word {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: clamp(34px, 9.4vw, 76px);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.intro-sequence-label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---------- choreography (only while the overlay exists) ---------- */
+html.js:not(.rm):not(.paused) .intro-sequence-logo :is(path, line, polyline, circle, rect):not(.intro-sequence-fill) {
+  stroke-dasharray: 1;
+  animation: intro-sequence-draw calc(var(--intro-sequence-d, 1600ms) * 0.45) var(--ls-inout) calc(var(--intro-sequence-d, 1600ms) * 0.04) both;
+}
+html.js:not(.rm):not(.paused) .intro-sequence-fill {
+  animation: intro-sequence-fade calc(var(--intro-sequence-d, 1600ms) * 0.2) ease calc(var(--intro-sequence-d, 1600ms) * 0.4) both;
+}
+html.js:not(.rm):not(.paused) .intro-sequence-word .w i {
+  animation: intro-sequence-rise calc(var(--intro-sequence-d, 1600ms) * 0.4) var(--ls-ease) var(--d, 0ms) both;
+}
+html.js:not(.rm):not(.paused) .intro-sequence-label {
+  animation: intro-sequence-up calc(var(--intro-sequence-d, 1600ms) * 0.3) var(--ls-ease) calc(var(--intro-sequence-d, 1600ms) * 0.45) both;
+}
+html.js:not(.rm):not(.paused) .intro-sequence-in {
+  animation: intro-sequence-out calc(var(--intro-sequence-d, 1600ms) * 0.18) cubic-bezier(0.5, 0, 0.75, 0) calc(var(--intro-sequence-d, 1600ms) * 0.7) forwards;
+}
+html.js:not(.rm):not(.paused) .intro-sequence::after {
+  animation: intro-sequence-edge calc(var(--intro-sequence-d, 1600ms) * 0.5) var(--ls-ease) calc(var(--intro-sequence-d, 1600ms) * 0.2) both;
+}
+
+/* skip (click, tap, key, wheel before the lift): the curtain leaves at once, in 60% of the lift */
+html.js:not(.rm):not(.paused) .intro-sequence.intro-sequence-skip:not(.intro-sequence-gone) {
+  animation:
+    intro-sequence-lift var(--intro-sequence-skip, 270ms) var(--ls-inout) forwards,
+    intro-sequence-failsafe 0s linear var(--ls-failsafe) forwards;
+}
+html.js:not(.rm):not(.paused) .intro-sequence-skip .intro-sequence-in {
+  animation: intro-sequence-out var(--intro-sequence-skip, 270ms) cubic-bezier(0.5, 0, 0.75, 0) forwards;
+}
+
+@keyframes intro-sequence-lift { to { transform: translateY(-100%); visibility: hidden; } }
+@keyframes intro-sequence-failsafe { to { visibility: hidden; } }
+@keyframes intro-sequence-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes intro-sequence-fade { from { opacity: 0; } }
+@keyframes intro-sequence-rise { from { transform: translateY(112%); } }
+@keyframes intro-sequence-up { from { opacity: 0; transform: translateY(10px); } }
+@keyframes intro-sequence-out { to { opacity: 0; transform: translateY(-28px); } }
+@keyframes intro-sequence-edge { from { transform: scaleX(0); } }
+
+@media (min-width: 820px) {
+  .intro-sequence-logo { width: 72px; height: 72px; }
+  .intro-sequence-in { gap: 22px; }
+  .intro-sequence-label { font-size: 0.8125rem; }
+}
