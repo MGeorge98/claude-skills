@@ -10,6 +10,7 @@ npx skills add MGeorge98/claude-skills --skill ui-book
 npx skills add MGeorge98/claude-skills --skill orchestrator
 npx skills add MGeorge98/claude-skills --skill landing-studio
 npx skills add MGeorge98/claude-skills --skill deck-studio
+npx skills add MGeorge98/claude-skills --skill tour-studio
 ```
 
 ## Skills
@@ -65,3 +66,13 @@ Invoke with `/deck-studio` and the material (a talk, a pitch, a workshop, a deck
 What it encodes from real runs: one point per slide and under 40 words; steps reserve their space; the deck works without JS (prerendered) and prints with every step in; design at 1920x1080 in px, never viewport units; an embedded demo deck must stay out of the presenter sync; numbers come from a verified facts line or they do not go on the slide.
 
 Files: `deck-studio/SKILL.md` (the method), `CONTRACT.md` (stage, steps, keys, presenter, print, tokens), `kit/` (runtime, React parts, CSS, slide types, app template with `sync-kit.sh`), `scripts/` (audit, export, gate, sheet), `references/` (brief, facts ledger, outline, tone directions, slide rules, gotchas, clichés, handoff), `gallery/` (audit sheets of the kit demos).
+
+### tour-studio
+
+Orchestrator playbook plus a code kit for a guided sales demo of an existing app: a standalone, static Next.js front-end with mock data (no login, no backend) where a visitor clicks "Next" through rebuilt screens. Each step spotlights one element with one benefit sentence; the step lives in the URL; there is a start screen with a chapter picker and a final screen with one call to action. The source app stays read-only and nothing real leaves it: names, companies and contacts are invented, and the run ends with a grep for the real ones.
+
+Invoke with `/tour-studio` and the app to demo ("a guided tour of the operator dashboard", "tur ghidat pentru aplicația de oferte"); Romanian is the default language, and the engine's strings sit in one file for any other.
+
+What it encodes from real runs (three demos): take the look from the source code, never from a brief or memory; rebuild only the screens the tour visits; 10 to 12 steps in 3 or 4 chapters, about 30 words each, with a "can be adapted" line on most; steps are data that point at `data-tour` attributes; the spotlight moves with an ease-out tween, not a spring; a fill-only accent needs its own text colour; wait for the step counter before a screenshot; walk every step at 1440 and 390 wide and look at every picture; parallel builds never share a browser or stop each other's dev servers.
+
+Files: `tour-studio/SKILL.md` (the method), `kit/` (spotlight engine with a bottom sheet on phones, steps and strings files, config, start and final screen templates, `scripts/shots.py` for the screenshot walk).
