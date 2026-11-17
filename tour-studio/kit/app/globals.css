@@ -6,6 +6,7 @@
    (its tailwind config / globals.css), never with a brief or memory. Keep the names. */
 @layer base {
   :root {
+    --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif; /* replaced by the source app's font in app/layout.tsx */
     --page: #f6f7f9;
     --bg: #ffffff;
     --bg-subtle: #f1f3f6;
@@ -20,6 +21,14 @@
     --accent-soft: #eef1f5;
     --accent-text: var(--accent); /* text on --accent-soft, links, icons. Set a dark value when --accent is fill-only (lime, yellow) */
     --ok: #0f7b3e;
+    --warn-bg: #fff4dc;
+    --warn: #7a4a00;
+    /* tour cursor mode: the arrow, the click ripple, the moment pill and the ring around the step's block.
+       --pointer = the app's ink; --pointer-edge = the brand's bright fill (lime, yellow...) or white; keep them contrasting. */
+    --pointer: #0f172a;
+    --pointer-edge: #ffffff;
+    --ring: var(--fg);
+    --ring-glow: color-mix(in srgb, var(--accent) 30%, transparent);
     --shadow: 0 12px 40px rgba(15, 23, 42, 0.16), 0 2px 6px rgba(15, 23, 42, 0.06);
     --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 6px 20px rgba(15, 23, 42, 0.05);
     color-scheme: light;
@@ -37,3 +46,16 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0s !important; transition-duration: 0s !important; }
 }
+
+/* tour: the click ripple under the cursor and the ring's entrance */
+.tour-ripple {
+  position: fixed;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 2px solid var(--pointer);
+  background: var(--ring-glow);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+}
+@keyframes tour-ring { from { opacity: 0; transform: scale(1.02); } to { opacity: 1; transform: none; } }

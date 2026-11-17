@@ -18,6 +18,7 @@ export default {
         hover: v("hover"),
         accent: { DEFAULT: v("accent"), fg: v("accent-fg"), soft: v("accent-soft"), text: v("accent-text") },
         ok: v("ok"),
+        warn: { DEFAULT: v("warn"), bg: v("warn-bg") },
       },
       borderRadius: { DEFAULT: "10px", md: "10px", lg: "12px" },
       boxShadow: { pop: v("shadow"), card: v("shadow-card") },

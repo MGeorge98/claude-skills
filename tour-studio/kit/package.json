@@ -2,10 +2,13 @@
   "name": "tour-demo",
   "version": "0.1.0",
   "private": true,
+  "config": {
+    "port": "3210"
+  },
   "scripts": {
-    "dev": "next dev -p 3210",
+    "dev": "next dev -p $npm_package_config_port",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p $npm_package_config_port",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
